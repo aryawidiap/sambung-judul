@@ -3,8 +3,9 @@ import Image from "next/image";
 import { Ms_Madi, Figtree } from 'next/font/google'
 import { figtree } from "./fonts";
 import { ChangeEvent, useEffect, useState } from "react";
-import SongHistoryItem from "./_components/SongHistoryItem";
+import { SongHistoryListItem, SongSearchListItem } from "./_components/SongListItem";
 import { AnimatePresence, motion } from "motion/react";
+import Song from "./_model/Song";
 import { removeStopwords, eng } from 'stopword';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -17,41 +18,6 @@ const msMadi = Ms_Madi({
   weight: ['400'],
 });
 
-
-interface Song {
-  id: string,
-  title: string,
-  year: number,
-  artist: string
-}
-
-const SAMPLE_SONGS = [
-  {
-    id: '1',
-    title: 'Time for the moon night',
-    year: 2018,
-    artist: 'GFRIEND'
-  },
-  {
-    id: '2',
-    title: 'Water Flower',
-    year: 2018,
-    artist: 'GFRIEND'
-  },
-  {
-    id: '3',
-    title: 'Flower Garden',
-    year: 2018,
-    artist: 'GFRIEND'
-  },
-  {
-    id: '4',
-    title: 'Flower',
-    year: 2018,
-    artist: 'GFRIEND'
-  },
-]
-
 export default function Home() {
   const [songs, setSongs] = useState<Array<Song>>([]);
   // const [displayedSongs, setDisplayedSongs] = useState<Array<Song>>([]);
@@ -62,13 +28,14 @@ export default function Home() {
   const [initialPage, setInitialPage] = useState(true);
   const displayedSongs = songs.slice(-3);
   const { removeStopwords } = require('stopword');
+
   const getSongCoverArt = async () => {
 
   }
+
   const getSongList = async () => {
     try {
       const url = encodeURI(`https://musicbrainz.org/ws/2/recording?query=recording:${encodeURIComponent(title)} AND artist:${encodeURIComponent(artist)}`);
-      console.log(url);
       const response = await fetch(
         url,
         {
@@ -79,23 +46,18 @@ export default function Home() {
         }
       );
       const data = await response.json();
-      console.log(data);
-      
-      const songList = data.recordings.map((song:any) => {
+      // console.log(data);
+
+      const songList = data.recordings.map((song: any) => {
+        console.log(song);
+        // TODO: consider null/properties not found
         return {
           id: song["id"],
           title: song["title"],
-          year: song["first-release-date"].split('-')[0],
+          year: song["first-release-date"] ? song["first-release-date"].split('-')[0] : 'unknown',
           artist: song["artist-credit"][0]["name"]
         } as Song
       }) as Song[];
-      console.log(songList);
-      /**
-       * id = id
-       * title = title
-       * year = first-release-date (is in yyyy-mm-dd format)
-       * artist = artist-credit[0].name
-       */
       return songList;
     } catch (error) {
       console.log(error);
@@ -122,45 +84,15 @@ export default function Home() {
   `
   let inputLabelClassName = `block text-center text-sm font-bold`;
 
-  // setSongs(SAMPLE_SONGS);
   const getMatchedSongs = () => {
     // API Call to musicBrainz API
     return getSongList();
-    // TODO: replace with api call later
-    // return SAMPLE_SONGS.filter((song) => song.title.toLowerCase().includes(title.toLowerCase()));
   }
 
   const handleSubmit = async () => {
     if (keywordHit) {
       setMatchedSongs(await getMatchedSongs());
     }
-  }
-
-  const listMatchedSong = (song: Song) => {
-    return <motion.li initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} id={song.id} key={song.id} className="outline rounded-xl bg-white/30 relative overflow-clip">
-      <div className="flex flex-row p-3 me-1">
-        <div className="album-cover rounded-md bg-blue-100 size-[72px]"></div>
-        <div className="song-description ml-3">
-          <div className="flex flex-row ">
-            <h3>{song.title}</h3>
-            <div className="ml-2">{song.year}</div>
-          </div>
-          <div>
-            {song.artist}
-          </div>
-        </div>
-      </div>
-      <button className="ps-5 absolute inset-y-0 right-0 
-      text-white/50
-      hover:bg-linear-to-r hover:from-white/0 hover:to-white/80 
-      hover:text-stone-800 
-      active:ps-20 
-      transition" onClick={() => {
-          addNewSong(song)
-        }}>
-        <FontAwesomeIcon icon={angleRightIcon} />
-      </button>
-    </motion.li>
   }
 
   // ref: https://github.com/tailwindlabs/tailwindcss/discussions/3461
@@ -187,15 +119,13 @@ export default function Home() {
   } as { [key: number]: {} };
 
   const createSongHistoryItem = (song: Song, index: number, totalSongs: number) => {
-    console.log("song name: " + song.title + " index: " + (totalSongs - index));
-    let className = "transition duration-500 ease-in-out flex flex-row p-3 outline rounded-xl bg-white/30 backdrop-blur-xs";
-
-    className += ` ${blurClass[totalSongs - index]} ${scaleClass[totalSongs - index]} ${offsetClass[totalSongs - index]}`;
+    // console.log("song name: " + song.title + " index: " + (totalSongs - index));
+    let variableClassName = ` ${blurClass[totalSongs - index]} ${scaleClass[totalSongs - index]} ${offsetClass[totalSongs - index]}`;
 
 
-    return (<SongHistoryItem
+    return (<SongHistoryListItem
       song={song}
-      className={className}
+      className={variableClassName}
       key={song.id}
     />)
   }
@@ -208,9 +138,9 @@ export default function Home() {
       ]
     );
     // Replace punctuation -> Source - https://stackoverflow.com/a
-// Posted by Mike Grace, modified by community. See post 'Timeline' for change history
-// Retrieved 2025-12-09, License - CC BY-SA 3.0
-    setKeywords(removeStopwords(song.title.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").split(" ")).map(((word: string) => {
+    // Posted by Mike Grace, modified by community. See post 'Timeline' for change history
+    // Retrieved 2025-12-09, License - CC BY-SA 3.0
+    setKeywords(removeStopwords(song.title.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").split(" ")).map(((word: string) => {
       return {
         term: word,
         foundInTitle: false,
@@ -222,7 +152,10 @@ export default function Home() {
     setArtist("");
   }
 
-
+  const handleJudulLaguChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value);
+    checkKeywordsInTitle(e.target.value);
+  }
 
   const checkKeywordsInTitle = (title: string) => {
     if (keywords.length === 0) {
@@ -247,32 +180,37 @@ export default function Home() {
 
   function PreviousSongKeywords() {
     if (songs.length > 0) {
-      return <div className="flex flex-row gap-2 mt-3 text-xs">
-        Kata kunci:
-        <ul className="flex flex-row gap-1">
-          {
-            keywords.map((keyword, index) =>
-              <li key={index} className={"font-semibold " + (keyword.foundInTitle ? "text-white" : "text-white/50")}>
-                {keyword.term + (index === keywords.length - 1 ? "" : ",")}
-              </li>
-            )
-          }
-        </ul>
-      </div>
+      return (
+        <div className="flex flex-row gap-2 mt-3 text-xs">
+          Kata kunci:
+          <ul className="flex flex-row gap-1">
+            {
+              keywords.map((keyword, index) =>
+                <li key={index} className={"font-semibold " + (keyword.foundInTitle ? "text-white" : "text-white/50")}>
+                  {keyword.term + (index === keywords.length - 1 ? "" : ",")}
+                </li>
+              )
+            }
+          </ul>
+        </div>
+      )
     } else {
-      // return <div className="flex flex-row outline outline-blue-400 px-5 py-1 rounded-full gap-2 text-white italic mt-3 text-xs">
-      //   Kata kunci akan muncul di sini saat lagu dipilih
-      // </div>
-
-      return <div className="flex flex-row gap-1 mt-3 text-xs text-white/50">
-        Kata kunci:
-        <span className={"font-semibold"}>belum ada lagu sebelumnya ;D</span>
-      </div>
+      return (
+        <div className="flex flex-row gap-1 mt-3 text-xs text-white/50">
+          Kata kunci:
+          <span className={"font-semibold"}>belum ada lagu sebelumnya ;D</span>
+        </div>
+      )
     }
   }
 
   function SearchResult() {
+    /**
+     * TODO: {known bug} SearchResult function is executed twice
+     */
+    let count = 0;
     if (matchedSongs.length) {
+      // console.log(matchedSongs);
       return <div className="flex flex-col items-center">
         <div className="mb-2">
           Manakah lagu yang kamu maksud?
@@ -280,29 +218,30 @@ export default function Home() {
         <ul id="search-result" className="flex flex-col gap-y-3">
           <AnimatePresence>
             { // maybe at pagination?
-              matchedSongs.map((song, index) =>
-                listMatchedSong(song)
+              matchedSongs.map(song => {
+                count++;
+                console.log(count);
+                return <SongSearchListItem
+                  song={song}
+                  addSong={addNewSong}
+                />
+              }
               )
             }
           </AnimatePresence>
-
         </ul>
-
       </div>
     }
   }
 
-  function handleJudulLaguChange(e: ChangeEvent<HTMLInputElement>) {
-    setTitle(e.target.value);
-    checkKeywordsInTitle(e.target.value);
-  }
+  
 
   return (
-    <div className="flex min-h-screen w-full flex-col items-center justify-center bg-zinc-50 font-sans dark:bg-radial-[at_50%_75%] dark:from-emerald-950 dark:via-green-700 dark:to-lime-600 dark:to-90%">
+    <div className={`flex min-h-screen w-full flex-col items-center ${initialPage ? "justify-center" : "justify-between"} bg-zinc-50 font-sans dark:bg-radial-[at_50%_75%] dark:from-emerald-950 dark:via-green-700 dark:to-lime-600 dark:to-90% transition`}>
       <nav>
         <h1 className={"text-3xl my-3 transition " + msMadi.className + (initialPage ? "" : "")}>Sambung <span className={figtree.className + " font-bold uppercase text-2xl"}>Judul</span></h1>
       </nav>
-      <main className={"flex min-h-screen w-full max-w-3xl flex-col items-center justify-center py-5 px-5 sm:items-center overflow-x-clip"}>
+      <main className={"flex w-full max-w-3xl flex-col items-center justify-center py-5 px-5 sm:items-center overflow-x-clip"}>
 
         {
           displayedSongs.length !== 0 ?
@@ -343,9 +282,7 @@ export default function Home() {
               onChange={(e) => handleJudulLaguChange(e)} type="text"
               className={formInputClassName}
               placeholder={initialPage ? "Ketik judul untuk mulai" : "Ketik judul lagu"} />
-            {
-              PreviousSongKeywords()
-            }
+            <PreviousSongKeywords />
           </div>
           <div className={initialPage ? "hidden" : "sm:col-span-4 mt-4 flex flex-col items-center-safe"}>
             <motion.label
@@ -373,20 +310,20 @@ export default function Home() {
             text-sm font-semibold text-white 
             focus-visible:outline-2 focus-visible:outline-offset-2 
             focus-visible:outline-neutral-100 focus-visible:scale-110
+            hover:outline-2 hover:outline-offset-2 
+            hover:outline-neutral-100 hover:scale-110
             active:scale-90 active:bg-slate-800/70 active:inset-shadow-sm 
             active:inset-shadow-slate-950/70 transition">Cari</button>
           </div>
         </form>
 
-        {
-          SearchResult()
-        }
+        <SearchResult />
 
       </main>
       <hr />
       <footer className="flex flex-row gap-2 my-3">
-        <div>Made with Spotify</div>
-        <div>Instagram</div>
+        <div>Made with MusicBrainz DB |</div>
+        <div>Instagram |</div>
         <div>Github</div>
       </footer>
     </div>
