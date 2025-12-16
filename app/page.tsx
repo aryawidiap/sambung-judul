@@ -154,7 +154,7 @@ export default function Home() {
 
   const handleJudulLaguChange = (e: ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
-    checkKeywordsInTitle(e.target.value);
+    checkKeywordsInTitle(e.target.value.toLowerCase());
   }
 
   const checkKeywordsInTitle = (title: string) => {
