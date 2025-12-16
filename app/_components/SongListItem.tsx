@@ -50,18 +50,16 @@ interface SongHistoryListItemProps {
 
 export function SongHistoryListItem({ song, className }: SongHistoryListItemProps) {
     return (
-        <AnimatePresence>
-            <motion.li
-                initial={{ opacity: 0, scale: 1.1 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0 }}
-                transition={{ ease: "easeInOut" }}
-                id={song.id}
-                className={"transition duration-500 ease-in-out outline rounded-xl bg-white/30 backdrop-blur-xs w-xs" + className}>
-                
-                <SongDetails song={song} />
-            </motion.li>
-        </AnimatePresence>
+        <motion.li
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0 }}
+            transition={{ ease: "easeInOut" }}
+            id={song.id}
+            className={"transition duration-500 ease-in-out outline rounded-xl bg-white/30 backdrop-blur-xs w-xs" + className}>
+
+            <SongDetails song={song} />
+        </motion.li>
 
     );
 }
@@ -82,7 +80,6 @@ export function SongSearchListItem({ song, addSong }: SongSearchListItemProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             id={song.id}
-            key={song.id}
             className="outline rounded-xl bg-white/30 backdrop-blur-xs relative w-xs">
             <SongDetails song={song} />
             <button className="ps-5 absolute inset-y-0 right-0 

@@ -207,6 +207,7 @@ export default function Home() {
   function SearchResult() {
     /**
      * TODO: {known bug} SearchResult function is executed twice
+     * Update: twice rendering is a React feature, but the key duplicate is still a mystery
      */
     let count = 0;
     if (matchedSongs.length) {
@@ -224,6 +225,7 @@ export default function Home() {
                 return <SongSearchListItem
                   song={song}
                   addSong={addNewSong}
+                  key={song.id}
                 />
               }
               )
@@ -234,7 +236,7 @@ export default function Home() {
     }
   }
 
-  
+
 
   return (
     <div className={`flex min-h-screen w-full flex-col items-center ${initialPage ? "justify-center" : "justify-between"} bg-zinc-50 font-sans dark:bg-radial-[at_50%_75%] dark:from-emerald-950 dark:via-green-700 dark:to-lime-600 dark:to-90% transition`}>
@@ -251,13 +253,14 @@ export default function Home() {
               id="history"
               className="flex flex-row items-center relative mb-3"
             >
-              {
-                displayedSongs.map((song, index) => {
-                  const totalNumberOfSongsInHistory = songs.length <= 3 ? songs.length : 3;
-                  return createSongHistoryItem(song, index, totalNumberOfSongsInHistory)
+              <AnimatePresence>
+                {
+                  displayedSongs.map((song, index) => {
+                    const totalNumberOfSongsInHistory = songs.length <= 3 ? songs.length : 3;
+                    return createSongHistoryItem(song, index, totalNumberOfSongsInHistory)
+                  })
                 }
-                )
-              }
+              </AnimatePresence>
             </motion.ul>
             : null
         }
