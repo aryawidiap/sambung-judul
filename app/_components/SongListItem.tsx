@@ -101,7 +101,7 @@ function SongDetails({ song }: { song: Song }) {
     return (
         <div className="flex flex-row items-center p-3 me-1">
             <div className="album-cover rounded-md bg-blue-100 size-[80px] min-w-[80px] min-h-[80px] overflow-clip">
-                <img src={`/music_placeholder.png`} alt="" className="object-cover h-auto w-full" />
+                <img src={song.songCoverArtLink === '' ? `/music_placeholder.png` : song.songCoverArtLink} alt="" className="object-cover h-auto w-full" />
             </div>
             <div className="ml-3 min-w-0">
                 <div className="group relative">

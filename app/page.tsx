@@ -54,7 +54,8 @@ export default function Home() {
           id: song["id"],
           title: song["title"],
           year: song["first-release-date"] ? song["first-release-date"].split('-')[0] : 'unknown',
-          artist: song["artist-credit"][0]["name"]
+          artist: song["artist-credit"][0]["name"],
+          songCoverArtLink: '',
         } as Song
       }) as Song[])
       // do not include all the songs already added to history
