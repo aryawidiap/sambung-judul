@@ -1,13 +1,13 @@
 'use client'
-import Image from "next/image";
-import { Ms_Madi, Figtree } from 'next/font/google'
+import { Ms_Madi } from 'next/font/google'
 import { figtree } from "./fonts";
-import { ChangeEvent, useEffect, useState } from "react";
-import { SongHistoryListItem, SongSearchListItem } from "./_components/SongListItem";
+import { ChangeEvent, useState } from "react";
+import { SongSearchListItem } from "./_components/SongListItem";
 import { AnimatePresence, motion } from "motion/react";
 import Song from "./_model/Song";
+// DO NOT DELETE
 import { removeStopwords, eng } from 'stopword';
-
+// DO NOT DELETE
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconProp, library } from '@fortawesome/fontawesome-svg-core'
 /* import all the icons in Free Solid, Free Regular, and Brands styles */
