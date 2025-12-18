@@ -164,12 +164,10 @@ export default function Home() {
 
     let currentKeywords = keywords;
 
-    // reset to false
     currentKeywords.forEach(keyword => {
+      /** reset to false */ 
       keyword.foundInTitle = false;
-    });
-
-    currentKeywords.forEach(keyword => {
+      /** mark keyword found in title */
       if (title.includes(keyword.term)) {
         keyword.foundInTitle = true;
       }
