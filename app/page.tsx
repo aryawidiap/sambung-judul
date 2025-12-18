@@ -47,14 +47,19 @@ export default function Home() {
       const data = await response.json();
       // console.log(data);
 
-      const songList = data.recordings.map((song: any) => {
+      const songHistoryId = songs.map(song => song.id);
+      
+      const songList = (data.recordings.map((song: any) => {
         return {
           id: song["id"],
           title: song["title"],
           year: song["first-release-date"] ? song["first-release-date"].split('-')[0] : 'unknown',
           artist: song["artist-credit"][0]["name"]
         } as Song
-      }) as Song[];
+      }) as Song[])
+      // do not include all the songs already added to history
+      .filter((song) => !songHistoryId.includes(song.id));;
+
       return songList;
     } catch (error) {
       console.log(error);
