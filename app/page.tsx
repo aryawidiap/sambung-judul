@@ -20,7 +20,6 @@ const msMadi = Ms_Madi({
 
 export default function Home() {
   const [songs, setSongs] = useState<Array<Song>>([]);
-  // const [displayedSongs, setDisplayedSongs] = useState<Array<Song>>([]);
   const [matchedSongs, setMatchedSongs] = useState<Array<Song>>([]);
   const [title, setTitle] = useState('');
   const [artist, setArtist] = useState('');
@@ -49,8 +48,6 @@ export default function Home() {
       // console.log(data);
 
       const songList = data.recordings.map((song: any) => {
-        console.log(song);
-        // TODO: consider null/properties not found
         return {
           id: song["id"],
           title: song["title"],
@@ -119,9 +116,7 @@ export default function Home() {
   } as { [key: number]: {} };
 
   const createSongHistoryItem = (song: Song, index: number, totalSongs: number) => {
-    // console.log("song name: " + song.title + " index: " + (totalSongs - index));
     let variableClassName = ` ${blurClass[totalSongs - index]} ${scaleClass[totalSongs - index]} ${offsetClass[totalSongs - index]}`;
-
 
     return (<SongHistoryListItem
       song={song}
@@ -203,23 +198,15 @@ export default function Home() {
   }
 
   function SearchResult() {
-    /**
-     * TODO: {known bug} SearchResult function is executed twice
-     * Update: twice rendering is a React feature, but the key duplicate is still a mystery
-     */
-    let count = 0;
     if (matchedSongs.length) {
-      // console.log(matchedSongs);
       return <div className="flex flex-col items-center">
         <div className="mb-2">
           Manakah lagu yang kamu maksud?
         </div>
         <ul id="search-result" className="flex flex-col gap-y-3">
           <AnimatePresence>
-            { // maybe at pagination?
+            {
               matchedSongs.map(song => {
-                count++;
-                console.log(count);
                 return <SongSearchListItem
                   song={song}
                   addSong={addNewSong}
