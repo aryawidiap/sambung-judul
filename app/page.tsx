@@ -15,10 +15,16 @@ import { fas } from '@fortawesome/free-solid-svg-icons'
 import SongHistory from "./_components/SongHistory";
 library.add(fas)
 
+/**
+ * `const` for the font used in "Sambung Judul" header.
+ */
 const msMadi = Ms_Madi({
   weight: ['400'],
 });
 
+/**
+ * @returns The main page component
+ */
 export default function Home() {
   const [songs, setSongs] = useState<Array<Song>>([]);
   const [matchedSongs, setMatchedSongs] = useState<Array<Song>>([]);
@@ -171,6 +177,10 @@ export default function Home() {
     }
   }
 
+  /**
+   * Renders the search result.
+   * @returns List of the songs from the search result.
+   */
   function SearchResult() {
     if (matchedSongs.length) {
       return <div className="flex flex-col items-center">
