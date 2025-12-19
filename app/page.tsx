@@ -13,6 +13,7 @@ import { IconProp, library } from '@fortawesome/fontawesome-svg-core'
 /* import all the icons in Free Solid, Free Regular, and Brands styles */
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import SongHistory from "./_components/SongHistory";
+import SearchResult from './_components/SearchResult';
 library.add(fas)
 
 /**
@@ -75,6 +76,17 @@ export default function Home() {
     return [] as Song[];
   }
 
+  const getMatchedSongs = () => {
+    // API Call to musicBrainz API
+    return getSongList();
+  }
+
+  const handleSubmit = async () => {
+    if (keywordHit) {
+      setMatchedSongs(await getMatchedSongs());
+    }
+  }
+
   // @ts-ignore
   const angleRightIcon: IconProp = "fa-solid fa-angle-right";
 
@@ -93,17 +105,6 @@ export default function Home() {
   transition
   `
   let inputLabelClassName = `block text-center text-sm font-bold`;
-
-  const getMatchedSongs = () => {
-    // API Call to musicBrainz API
-    return getSongList();
-  }
-
-  const handleSubmit = async () => {
-    if (keywordHit) {
-      setMatchedSongs(await getMatchedSongs());
-    }
-  }
 
   const addNewSong = (song: Song) => {
     setSongs(
@@ -177,36 +178,6 @@ export default function Home() {
     }
   }
 
-  /**
-   * Renders the search result.
-   * @returns List of the songs from the search result.
-   */
-  function SearchResult() {
-    if (matchedSongs.length) {
-      return <div className="flex flex-col items-center">
-        <div className="mb-2">
-          Manakah lagu yang kamu maksud?
-        </div>
-        <ul id="search-result" className="flex flex-col gap-y-3">
-          <AnimatePresence>
-            {
-              matchedSongs.map(song => {
-                return <SongSearchListItem
-                  song={song}
-                  addSong={addNewSong}
-                  key={song.id}
-                />
-              }
-              )
-            }
-          </AnimatePresence>
-        </ul>
-      </div>
-    }
-  }
-
-
-
   return (
     <div className={`flex min-h-screen w-full flex-col items-center ${initialPage ? "justify-center" : "justify-between"} bg-zinc-50 font-sans dark:bg-radial-[at_50%_75%] dark:from-emerald-950 dark:via-green-700 dark:to-lime-600 dark:to-90% transition`}>
       <nav>
@@ -215,8 +186,8 @@ export default function Home() {
       <main className={"flex w-full max-w-3xl flex-col items-center justify-center py-5 px-5 sm:items-center overflow-x-clip"}>
         {
           displayedSongs.length !== 0 ?
-          <SongHistory displayedSongs={displayedSongs} />
-          : null
+            <SongHistory displayedSongs={displayedSongs} />
+            : null
         }
 
         <form action="" className="mb-4">
@@ -273,7 +244,7 @@ export default function Home() {
           </div>
         </form>
 
-        <SearchResult />
+        <SearchResult matchedSongs={matchedSongs} addNewSong={addNewSong} />
 
       </main>
       <hr />
