@@ -14,6 +14,7 @@ import { IconProp, library } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import SongHistory from "./_components/SongHistory";
 import SearchResult from './_components/SearchResult';
+import PreviousSongKeywords from './_components/PreviousSongKeywords';
 library.add(fas)
 
 /**
@@ -151,33 +152,7 @@ export default function Home() {
 
     setKeywords(currentKeywords);
   }
-
-  function PreviousSongKeywords() {
-    if (songs.length > 0) {
-      return (
-        <div className="flex flex-row gap-2 mt-3 text-xs">
-          Kata kunci:
-          <ul className="flex flex-row gap-1">
-            {
-              keywords.map((keyword, index) =>
-                <li key={index} className={"font-semibold " + (keyword.foundInTitle ? "text-white" : "text-white/50")}>
-                  {keyword.term + (index === keywords.length - 1 ? "" : ",")}
-                </li>
-              )
-            }
-          </ul>
-        </div>
-      )
-    } else {
-      return (
-        <div className="flex flex-row gap-1 mt-3 text-xs text-white/50">
-          Kata kunci:
-          <span className={"font-semibold"}>belum ada lagu sebelumnya ;D</span>
-        </div>
-      )
-    }
-  }
-
+  
   return (
     <div className={`flex min-h-screen w-full flex-col items-center ${initialPage ? "justify-center" : "justify-between"} bg-zinc-50 font-sans dark:bg-radial-[at_50%_75%] dark:from-emerald-950 dark:via-green-700 dark:to-lime-600 dark:to-90% transition`}>
       <nav>
@@ -209,7 +184,7 @@ export default function Home() {
               onChange={(e) => handleJudulLaguChange(e)} type="text"
               className={formInputClassName}
               placeholder={initialPage ? "Ketik judul untuk mulai" : "Ketik judul lagu"} />
-            <PreviousSongKeywords />
+            <PreviousSongKeywords show={keywords.length !== 0} keywords={keywords} />
           </div>
           <div className={initialPage ? "hidden" : "sm:col-span-4 mt-4 flex flex-col items-center-safe"}>
             <motion.label
@@ -244,7 +219,8 @@ export default function Home() {
           </div>
         </form>
 
-        <SearchResult matchedSongs={matchedSongs} addNewSong={addNewSong} />
+        {matchedSongs.length !== 0 ? <SearchResult matchedSongs={matchedSongs} addNewSong={addNewSong} /> : null}
+
 
       </main>
       <hr />
