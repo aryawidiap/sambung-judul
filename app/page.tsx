@@ -123,15 +123,14 @@ export default function Home() {
       const songList = data.recordings.map(async (song: any) => {
         console.log(song);
         const releaseId = song['releases'][0]['id'];
-        // const thumbnailLink = await getSongCoverArt(releaseId);
+        const thumbnailLink = await getSongCoverArt(releaseId);
         // TODO: consider null/properties not found
         return {
           id: song["id"],
           title: song["title"],
           year: song["first-release-date"] ? song["first-release-date"].split('-')[0] : 'unknown',
           artist: song["artist-credit"][0]["name"],
-          // coverArtLink: thumbnailLink,
-          coverArtLink: '',
+          coverArtLink: thumbnailLink
         } as Song;
       }) as Song[];
       return songList;
@@ -319,12 +318,10 @@ function PreviousSongKeywords({ show, keywords }: { show: boolean, keywords: Arr
         Kata kunci:
         <ul className="flex flex-row gap-1">
           {
-            keywords.map((keyword, index) => {
-              console.log(keyword, index);
-              return <li key={index} className={"font-semibold " + (keyword.foundInTitle ? "text-white" : "text-white/50")}>
+            keywords.map((keyword, index) =>
+              <li key={index} className={"font-semibold " + (keyword.foundInTitle ? "text-white" : "text-white/50")}>
                 {keyword.term + (index === keywords.length - 1 ? "" : ",")}
               </li>
-            }
             )
           }
         </ul>
