@@ -20,7 +20,7 @@ export function SongHistoryListItem({ song, className }: SongHistoryListItemProp
             exit={{ opacity: 0, scale: 0 }}
             transition={{ ease: "easeInOut" }}
             id={song.id}
-            className={"transition duration-500 ease-in-out outline rounded-xl bg-white/30 backdrop-blur-xs w-xs" + className}>
+            className={"transition duration-500 ease-in-out outline rounded-xl bg-white/50 backdrop-blur-xs w-xs" + className}>
 
             <SongDetails song={song} />
         </motion.li>
@@ -48,7 +48,7 @@ export function SongSearchListItem({ song, addSong }: SongSearchListItemProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             id={song.id}
-            className="outline rounded-xl bg-white/30 backdrop-blur-xs relative w-xs">
+            className="outline rounded-xl bg-white/50 backdrop-blur-xs relative w-xs">
             <SongDetails song={song} />
             <button className="ps-5 absolute inset-y-0 right-0 
       text-white/50
@@ -71,9 +71,9 @@ function SongDetails({ song }: { song: Song }) {
             <div className="album-cover rounded-md bg-blue-100 size-[80px] min-w-[80px] min-h-[80px] overflow-clip">
                 <SongImage songCoverArtLink={song.songCoverArtLink} />
             </div>
-            <div className="ml-3 min-w-0">
-                <div className="group relative">
-                    <h3 className="text-md font-semibold w-2xs overflow-hidden text-nowrap text-ellipsis capitalize">{song.title}</h3>
+            <div className="ml-3 min-w-0 text-stone-700">
+                <div className="group relative w-100">
+                    <h3 className="text-md font-semibold w-2xs overflow-hidden text-nowrap text-ellipsis capitalize w-100">{song.title}</h3>
                     <div className="tooltip absolute invisible group-hover:visible bg-neutral-200 text-stone-900 rounded transition px-2 py-1 text-sm text-center bottom-[100%] capitalize">{song.title}</div>
                 </div>
                 <div className="text-sm">{song.artist}</div>
