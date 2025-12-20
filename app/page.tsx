@@ -18,21 +18,82 @@ const msMadi = Ms_Madi({
   weight: ['400'],
 });
 
-
-
 export default function Home() {
-  const { removeStopwords } = require('stopword');
-
   const [songs, setSongs] = useState<Array<Song>>([]);
+  // const [displayedSongs, setDisplayedSongs] = useState<Array<Song>>([]);
   const [matchedSongs, setMatchedSongs] = useState<Array<Song>>([]);
   const [title, setTitle] = useState('');
   const [artist, setArtist] = useState('');
   const [keywords, setKeywords] = useState<Array<{ term: string, foundInTitle: boolean }>>([]);
   const [initialPage, setInitialPage] = useState(true);
-
   const displayedSongs = songs.slice(-3);
+  const { removeStopwords } = require('stopword');
+
+  const getSongCoverArt = async () => {
+
+  }
+
+  const getSongList = async () => {
+    try {
+      const url = encodeURI(`https://musicbrainz.org/ws/2/recording?query=recording:${encodeURIComponent(title)} AND artist:${encodeURIComponent(artist)}`);
+      const response = await fetch(
+        url,
+        {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+          }
+        }
+      );
+      const data = await response.json();
+      // console.log(data);
+
+      const songList = data.recordings.map((song: any) => {
+        console.log(song);
+        // TODO: consider null/properties not found
+        return {
+          id: song["id"],
+          title: song["title"],
+          year: song["first-release-date"] ? song["first-release-date"].split('-')[0] : 'unknown',
+          artist: song["artist-credit"][0]["name"]
+        } as Song
+      }) as Song[];
+      return songList;
+    } catch (error) {
+      console.log(error);
+    }
+    return [] as Song[];
+  }
+
   // @ts-ignore
   const angleRightIcon: IconProp = "fa-solid fa-angle-right";
+
+  let id = 3
+  let keywordHit = songs.length > 0 ? (keywords.filter((word) => word.foundInTitle === true).length > 0) : true;
+  let formInputClassName = `block mt-3 py-3 px-3 
+  min-w-0 w-3xs sm:w-xs 
+  focus:sm:scale-125 focus:sm:w-sm
+  focus:scale-110 focus:sm:w-sm
+  bg-neutral-600/30 outline outline-white/50 focus:outline-white/50
+  backdrop-blur-xs
+  rounded-full
+  hover:shadow-md shadow-white/50 focus:shadow-lg focus:shadow-white/50
+  sm:text-sm/6 text-center ${initialPage ? "text-white" : "text-grey"} 
+  font-semibold
+  transition
+  `
+  let inputLabelClassName = `block text-center text-sm font-bold`;
+
+  const getMatchedSongs = () => {
+    // API Call to musicBrainz API
+    return getSongList();
+  }
+
+  const handleSubmit = async () => {
+    if (keywordHit) {
+      setMatchedSongs(await getMatchedSongs());
+    }
+  }
 
   // ref: https://github.com/tailwindlabs/tailwindcss/discussions/3461
   const blurClass = {
@@ -57,96 +118,6 @@ export default function Home() {
     4: 'absolute left-[-9rem]',
   } as { [key: number]: {} };
 
-
-  let keywordHit = songs.length > 0 ? (keywords.filter((word) => word.foundInTitle === true).length > 0) : true;
-
-  let formInputClassName =
-    `block mt-3 py-3 px-3 
-  min-w-0 w-3xs sm:w-xs 
-  focus:sm:scale-125 focus:sm:w-sm
-  focus:scale-110 focus:sm:w-sm
-  bg-neutral-600/30 outline outline-white/50 focus:outline-white/50
-  backdrop-blur-xs
-  rounded-full
-  hover:shadow-md shadow-white/50 focus:shadow-lg focus:shadow-white/50
-  sm:text-sm/6 text-center ${initialPage ? "text-white" : "text-grey"} 
-  font-semibold
-  transition`
-  let inputLabelClassName = `block text-center text-sm font-bold`;
-
-
-  /**
-   * Getting the cover art of a song by calling  API
-   * @returns url of the cover art image
-   */
-  const getSongCoverArt = async (releaseMbid: string) => {
-    try {
-      const url = encodeURI(`http://coverartarchive.org/release/${encodeURIComponent(releaseMbid)}`);
-      const response = await fetch(
-        url,
-        {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json',
-          }
-        }
-      );
-      const data = await response.json();
-      console.log(data);
-
-      const imageData = data['images'][0];
-      const thumbnailLink = imageData['thumbnails']['500'] as string;
-
-      return thumbnailLink;
-    } catch (error) {
-      console.log(error);
-    }
-    return '';
-  }
-
-  const getSongList = async () => {
-    try {
-      const url = encodeURI(`https://musicbrainz.org/ws/2/recording?query=recording:${encodeURIComponent(title)} AND artist:${encodeURIComponent(artist)}`);
-      const response = await fetch(
-        url,
-        {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json',
-          }
-        }
-      );
-      const data = await response.json();
-      console.log("got the data from api!"); // only executed once
-      // console.log(data);
-
-      const songList = data.recordings.map(async (song: any) => {
-        console.log(song);
-        const releaseId = song['releases'][0]['id'];
-        const thumbnailLink = await getSongCoverArt(releaseId);
-        // TODO: consider null/properties not found
-        return {
-          id: song["id"],
-          title: song["title"],
-          year: song["first-release-date"] ? song["first-release-date"].split('-')[0] : 'unknown',
-          artist: song["artist-credit"][0]["name"],
-          coverArtLink: thumbnailLink
-        } as Song;
-      }) as Song[];
-      return songList;
-    } catch (error) {
-      console.log(error);
-    }
-    return [] as Song[];
-  }
-
-  const handleSubmit = async () => {
-    console.log("form submitted!")
-    if (keywordHit) {
-      setMatchedSongs(await getSongList());
-    }
-  }
-
   const createSongHistoryItem = (song: Song, index: number, totalSongs: number) => {
     // console.log("song name: " + song.title + " index: " + (totalSongs - index));
     let variableClassName = ` ${blurClass[totalSongs - index]} ${scaleClass[totalSongs - index]} ${offsetClass[totalSongs - index]}`;
@@ -160,29 +131,22 @@ export default function Home() {
   }
 
   const addNewSong = (song: Song) => {
-    console.log("added new song")
-    setSongs([...songs, song]);
-
+    setSongs(
+      [
+        ...songs,
+        song
+      ]
+    );
     // Replace punctuation -> Source - https://stackoverflow.com/a
     // Posted by Mike Grace, modified by community. See post 'Timeline' for change history
     // Retrieved 2025-12-09, License - CC BY-SA 3.0
-    setKeywords(removeStopwords(
-      [
-        ... new Set(
-          song.title
-            .toLowerCase()
-            .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "")
-            .split(" ")
-        )
-      ]
-    )
-      .map(((word: string) => {
-        return {
-          term: word,
-          foundInTitle: false,
-        }
-      })))
-
+    setKeywords(removeStopwords(song.title.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").split(" ")).map(((word: string) => {
+      return {
+        term: word,
+        foundInTitle: false,
+      }
+    })))
+    id++;
     setMatchedSongs([]);
     setTitle("");
     setArtist("");
@@ -213,6 +177,64 @@ export default function Home() {
 
     setKeywords(currentKeywords);
   }
+
+  function PreviousSongKeywords() {
+    if (songs.length > 0) {
+      return (
+        <div className="flex flex-row gap-2 mt-3 text-xs">
+          Kata kunci:
+          <ul className="flex flex-row gap-1">
+            {
+              keywords.map((keyword, index) =>
+                <li key={index} className={"font-semibold " + (keyword.foundInTitle ? "text-white" : "text-white/50")}>
+                  {keyword.term + (index === keywords.length - 1 ? "" : ",")}
+                </li>
+              )
+            }
+          </ul>
+        </div>
+      )
+    } else {
+      return (
+        <div className="flex flex-row gap-1 mt-3 text-xs text-white/50">
+          Kata kunci:
+          <span className={"font-semibold"}>belum ada lagu sebelumnya ;D</span>
+        </div>
+      )
+    }
+  }
+
+  function SearchResult() {
+    /**
+     * TODO: {known bug} SearchResult function is executed twice
+     */
+    let count = 0;
+    if (matchedSongs.length) {
+      // console.log(matchedSongs);
+      return <div className="flex flex-col items-center">
+        <div className="mb-2">
+          Manakah lagu yang kamu maksud?
+        </div>
+        <ul id="search-result" className="flex flex-col gap-y-3">
+          <AnimatePresence>
+            { // maybe at pagination?
+              matchedSongs.map(song => {
+                count++;
+                console.log(count);
+                return <SongSearchListItem
+                  song={song}
+                  addSong={addNewSong}
+                />
+              }
+              )
+            }
+          </AnimatePresence>
+        </ul>
+      </div>
+    }
+  }
+
+  
 
   return (
     <div className={`flex min-h-screen w-full flex-col items-center ${initialPage ? "justify-center" : "justify-between"} bg-zinc-50 font-sans dark:bg-radial-[at_50%_75%] dark:from-emerald-950 dark:via-green-700 dark:to-lime-600 dark:to-90% transition`}>
@@ -260,10 +282,7 @@ export default function Home() {
               onChange={(e) => handleJudulLaguChange(e)} type="text"
               className={formInputClassName}
               placeholder={initialPage ? "Ketik judul untuk mulai" : "Ketik judul lagu"} />
-            <PreviousSongKeywords
-              show={songs.length > 0}
-              keywords={keywords}
-            />
+            <PreviousSongKeywords />
           </div>
           <div className={initialPage ? "hidden" : "sm:col-span-4 mt-4 flex flex-col items-center-safe"}>
             <motion.label
@@ -298,7 +317,7 @@ export default function Home() {
           </div>
         </form>
 
-        <SearchResult matchedSongs={matchedSongs} addNewSong={addNewSong} />
+        <SearchResult />
 
       </main>
       <hr />
@@ -309,60 +328,4 @@ export default function Home() {
       </footer>
     </div>
   );
-}
-
-function PreviousSongKeywords({ show, keywords }: { show: boolean, keywords: Array<{ term: string, foundInTitle: boolean }> }) {
-  if (show) {
-    return (
-      <div className="flex flex-row gap-2 mt-3 text-xs">
-        Kata kunci:
-        <ul className="flex flex-row gap-1">
-          {
-            keywords.map((keyword, index) =>
-              <li key={index} className={"font-semibold " + (keyword.foundInTitle ? "text-white" : "text-white/50")}>
-                {keyword.term + (index === keywords.length - 1 ? "" : ",")}
-              </li>
-            )
-          }
-        </ul>
-      </div>
-    )
-  } else {
-    return (
-      <div className="flex flex-row gap-1 mt-3 text-xs text-white/50">
-        Kata kunci:
-        <span className={"font-semibold"}>belum ada lagu sebelumnya ;D</span>
-      </div>
-    )
-  }
-}
-
-function SearchResult({ matchedSongs, addNewSong }: { matchedSongs: Song[], addNewSong: Function }) {
-  /**
-   * TODO: {known bug} SearchResult function is executed twice
-   */
-  let count = 0;
-  if (matchedSongs.length) {
-    console.log(matchedSongs);
-    return <div className="flex flex-col items-center">
-      <div className="mb-2">
-        Manakah lagu yang kamu maksud?
-      </div>
-      <ul id="search-result" className="flex flex-col gap-y-3">
-        <AnimatePresence>
-          { // maybe at pagination?
-            matchedSongs.map(song => {
-              count++;
-              console.log(count);
-              return <SongSearchListItem
-                song={song}
-                addSong={addNewSong}
-              />
-            }
-            )
-          }
-        </AnimatePresence>
-      </ul>
-    </div>
-  }
 }
