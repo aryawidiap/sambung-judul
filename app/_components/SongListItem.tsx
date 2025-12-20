@@ -7,42 +7,6 @@ library.add(fas)
 import Song from "../_model/Song";
 import { AnimatePresence, motion } from "motion/react";
 
-/**
- * Getting the cover art of a song by calling  API
- * @returns url of the cover art image
- */
-const getSongCoverArt = async () => {
-    try {
-        const url = encodeURI(`https://musicbrainz.org/ws/2/recording?query=recording:${encodeURIComponent(title)} AND artist:${encodeURIComponent(artist)}`);
-        const response = await fetch(
-            url,
-            {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                }
-            }
-        );
-        const data = await response.json();
-        // console.log(data);
-
-        const songList = data.recordings.map((song: any) => {
-            console.log(song);
-            // TODO: consider null/properties not found
-            return {
-                id: song["id"],
-                title: song["title"],
-                year: song["first-release-date"] ? song["first-release-date"].split('-')[0] : 'unknown',
-                artist: song["artist-credit"][0]["name"]
-            } as Song
-        }) as Song[];
-        return songList;
-    } catch (error) {
-        console.log(error);
-    }
-    return [] as Song[];
-}
-
 interface SongHistoryListItemProps {
     song: Song;
     className: string;
@@ -74,6 +38,10 @@ const angleRightIcon: IconProp = "fa-solid fa-angle-right";
 
 export function SongSearchListItem({ song, addSong }: SongSearchListItemProps) {
     console.log(song.id);
+    let bgColor = 'white';
+    if(song.songCoverArtLink !== '') {
+        
+    }
     return (
         <motion.li
             initial={{ opacity: 0 }}
@@ -101,7 +69,7 @@ function SongDetails({ song }: { song: Song }) {
     return (
         <div className="flex flex-row items-center p-3 me-1">
             <div className="album-cover rounded-md bg-blue-100 size-[80px] min-w-[80px] min-h-[80px] overflow-clip">
-                <img src={song.songCoverArtLink === '' ? `/music_placeholder.png` : song.songCoverArtLink} alt="" className="object-cover h-auto w-full" />
+                <SongImage songCoverArtLink={song.songCoverArtLink} />
             </div>
             <div className="ml-3 min-w-0">
                 <div className="group relative">
@@ -113,4 +81,9 @@ function SongDetails({ song }: { song: Song }) {
             </div>
         </div>
     );
+}
+
+function SongImage({ songCoverArtLink }: { songCoverArtLink: string }) {
+    return <img src={songCoverArtLink === '' ? `/music_placeholder.png` : songCoverArtLink} alt="" className="object-cover h-auto w-full" />
+
 }

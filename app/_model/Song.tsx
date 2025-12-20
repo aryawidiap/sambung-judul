@@ -4,4 +4,5 @@ export default interface Song {
   year: number,
   artist: string,
   songCoverArtLink: string,
+  releaseId: string
 }

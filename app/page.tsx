@@ -2,7 +2,6 @@
 import { Ms_Madi } from 'next/font/google'
 import { figtree } from "./fonts";
 import { ChangeEvent, useState } from "react";
-import { SongSearchListItem } from "./_components/SongListItem";
 import { AnimatePresence, motion } from "motion/react";
 import Song from "./_model/Song";
 // DO NOT DELETE
@@ -37,8 +36,33 @@ export default function Home() {
   const displayedSongs = songs.slice(-3);
   const { removeStopwords } = require('stopword');
 
-  const getSongCoverArt = async () => {
+  /**
+   * Getting the cover art of a song by calling  API
+   * @returns url of the cover art image
+   */
+  const getSongCoverArt = async (releaseMbid: string) => {
+    try {
+      const url = encodeURI(`http://coverartarchive.org/release/${encodeURIComponent(releaseMbid)}`);
+      const response = await fetch(
+        url,
+        {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+          }
+        }
+      );
+      const data = await response.json();
+      console.log(data);
 
+      const imageData = data['images'][0];
+      const thumbnailLink = imageData['thumbnails']['500'] as string;
+
+      return thumbnailLink;
+    } catch (error) {
+      console.log(error);
+    }
+    return '';
   }
 
   const getSongList = async () => {
@@ -59,18 +83,36 @@ export default function Home() {
       const songHistoryId = songs.map(song => song.id);
 
       const songList = (data.recordings.map((song: any) => {
+        const releaseId = song['releases'][0]['id'];
+
         return {
           id: song["id"],
           title: song["title"],
           year: song["first-release-date"] ? song["first-release-date"].split('-')[0] : 'unknown',
           artist: song["artist-credit"][0]["name"],
           songCoverArtLink: '',
+          releaseId: releaseId,
         } as Song
       }) as Song[])
         // do not include all the songs already added to history
-        .filter((song) => !songHistoryId.includes(song.id));;
+        .filter((song) => !songHistoryId.includes(song.id));
 
-      return songList;
+      const songCoverArtLinks = await Promise.all(songList.map((song) => getSongCoverArt(song.releaseId)))
+      console.log(songCoverArtLinks)
+
+      const songListWithImage = songList.map((song, index) => {
+        return {
+          id: song.id,
+          title: song.title,
+          year: song.year,
+          artist: song.artist,
+          songCoverArtLink: songCoverArtLinks[index],
+          releaseId: song.releaseId,
+        } as Song;
+      })
+
+
+      return songListWithImage;
     } catch (error) {
       console.log(error);
     }
@@ -152,7 +194,7 @@ export default function Home() {
 
     setKeywords(currentKeywords);
   }
-  
+
   return (
     <div className={`flex min-h-screen w-full flex-col items-center ${initialPage ? "justify-center" : "justify-between"} bg-zinc-50 font-sans dark:bg-radial-[at_50%_75%] dark:from-emerald-950 dark:via-green-700 dark:to-lime-600 dark:to-90% transition`}>
       <nav>
