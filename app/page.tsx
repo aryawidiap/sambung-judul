@@ -1,276 +1,72 @@
 'use client'
 import { Ms_Madi } from 'next/font/google'
 import { figtree } from "./fonts";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, use, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import Song from "./_model/Song";
+
 // DO NOT DELETE
 import { removeStopwords, eng } from 'stopword';
-// DO NOT DELETE
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconProp, library } from '@fortawesome/fontawesome-svg-core'
+// DO NOT DELETE
+
 /* import all the icons in Free Solid, Free Regular, and Brands styles */
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import SongHistory from "./_components/SongHistory";
 import SearchResult from './_components/SearchResult';
-import PreviousSongKeywords from './_components/PreviousSongKeywords';
+import SearchForm from './_components/SearchForm';
+import Footer  from './_components/Footer';
 library.add(fas)
-
 /**
  * `const` for the font used in "Sambung Judul" header.
  */
 const msMadi = Ms_Madi({
-  weight: ['400'],
+    weight: ['400'],
 });
 
 /**
  * @returns The main page component
  */
 export default function Home() {
-  const [songs, setSongs] = useState<Array<Song>>([]);
-  const [matchedSongs, setMatchedSongs] = useState<Array<Song>>([]);
-  const [title, setTitle] = useState('');
-  const [artist, setArtist] = useState('');
-  const [keywords, setKeywords] = useState<Array<{ term: string, foundInTitle: boolean }>>([]);
-  const [initialPage, setInitialPage] = useState(true);
-  const displayedSongs = songs.slice(-3);
-  const { removeStopwords } = require('stopword');
 
-  /**
-   * Getting the cover art of a song by calling  API
-   * @returns url of the cover art image
-   */
-  const getSongCoverArt = async (releaseMbid: string) => {
-    try {
-      const url = encodeURI(`http://coverartarchive.org/release/${encodeURIComponent(releaseMbid)}`);
-      const response = await fetch(
-        url,
-        {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json',
-          }
-        }
-      );
-      const data = await response.json();
-      console.log(data);
+    const [songs, setSongs] = useState<Array<Song>>([]);
+    const [latestSongTitle, setLatestSongTitle] = useState('');
+    const [initialPage, setInitialPage] = useState(true);
+    const [searchedSong, setSearchedSong] = useState({title: '', artist: ''});
+    const displayedSongs = songs.slice(-3);
+    const { removeStopwords } = require('stopword');
 
-      const imageData = data['images'][0];
-      const thumbnailLink = imageData['thumbnails']['500'] as string;
-
-      return thumbnailLink;
-    } catch (error) {
-      console.log(error);
+    const addNewSong = (song: Song) => {
+        setSongs(
+            [
+                ...songs,
+                song
+            ]
+        );
+        setLatestSongTitle(song.title);
+        setSearchedSong({title: '', artist: ''});
     }
-    return '';
-  }
 
-  const getSongList = async () => {
-    try {
-      const url = encodeURI(`https://musicbrainz.org/ws/2/recording?query=recording:${encodeURIComponent(title)} AND artist:${encodeURIComponent(artist)}`);
-      const response = await fetch(
-        url,
-        {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json',
-          }
-        }
-      );
-      const data = await response.json();
-      // console.log(data);
-
-      const songHistoryId = songs.map(song => song.id);
-
-      const songList = (data.recordings.map((song: any) => {
-        const releaseId = song['releases'][0]['id'];
-
-        return {
-          id: song["id"],
-          title: song["title"],
-          year: song["first-release-date"] ? song["first-release-date"].split('-')[0] : 'unknown',
-          artist: song["artist-credit"][0]["name"],
-          songCoverArtLink: '',
-          releaseId: releaseId,
-        } as Song
-      }) as Song[])
-        // do not include all the songs already added to history
-        .filter((song) => !songHistoryId.includes(song.id));
-
-      const songCoverArtLinks = await Promise.all(songList.map((song) => getSongCoverArt(song.releaseId)))
-      console.log(songCoverArtLinks)
-
-      const songListWithImage = songList.map((song, index) => {
-        return {
-          id: song.id,
-          title: song.title,
-          year: song.year,
-          artist: song.artist,
-          songCoverArtLink: songCoverArtLinks[index],
-          releaseId: song.releaseId,
-        } as Song;
-      })
-
-
-      return songListWithImage;
-    } catch (error) {
-      console.log(error);
+    const openMainPage = () => {
+        setInitialPage(false);
     }
-    return [] as Song[];
-  }
 
-  const getMatchedSongs = () => {
-    // API Call to musicBrainz API
-    return getSongList();
-  }
+    const previousSongIds = songs.map(song => song.id);
 
-  const handleSubmit = async () => {
-    if (keywordHit) {
-      setMatchedSongs(await getMatchedSongs());
-    }
-  }
-
-  // @ts-ignore
-  const angleRightIcon: IconProp = "fa-solid fa-angle-right";
-
-  let id = 3
-  let keywordHit = songs.length > 0 ? (keywords.filter((word) => word.foundInTitle === true).length > 0) : true;
-  let formInputClassName = `block mt-3 py-3 px-3 
-  min-w-0 w-3xs sm:w-xs 
-  focus:sm:scale-125 focus:sm:w-sm
-  focus:scale-110 focus:sm:w-sm
-  bg-neutral-600/30 outline outline-white/50 focus:outline-white/50
-  backdrop-blur-xs
-  rounded-full
-  hover:shadow-md shadow-white/50 focus:shadow-lg focus:shadow-white/50
-  sm:text-sm/6 text-center ${initialPage ? "text-white" : "text-grey"} 
-  font-semibold
-  transition
-  `
-  let inputLabelClassName = `block text-center text-sm font-bold`;
-
-  const addNewSong = (song: Song) => {
-    setSongs(
-      [
-        ...songs,
-        song
-      ]
+    return (
+        <div className={`flex min-h-screen w-full flex-col items-center ${initialPage ? "justify-center" : "justify-between"} bg-zinc-50 font-sans dark:bg-radial-[at_50%_75%] dark:from-emerald-950 dark:via-green-700 dark:to-lime-600 dark:to-90% transition`}>
+            <nav>
+                <h1 className={"text-3xl my-3 transition " + msMadi.className + (initialPage ? "" : "")}>Sambung <span className={figtree.className + " font-bold uppercase text-2xl"}>Judul</span></h1>
+            </nav>
+            <main className={"flex w-full max-w-3xl flex-col items-center justify-center py-5 px-5 sm:items-center overflow-x-clip"}>
+                <SongHistory displayedSongs={displayedSongs} />
+                <SearchForm showFullForm={!initialPage} openMainPage={openMainPage} setSearchedSong={setSearchedSong} latestSongTitle={latestSongTitle}/>
+                <SearchResult searchedSong={searchedSong} addNewSong={addNewSong} previousSongIds={previousSongIds}/>
+            </main>
+            <hr />
+            <Footer />
+        </div>
     );
-    // Replace punctuation -> Source - https://stackoverflow.com/a
-    // Posted by Mike Grace, modified by community. See post 'Timeline' for change history
-    // Retrieved 2025-12-09, License - CC BY-SA 3.0
-    setKeywords(removeStopwords(song.title.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").split(" ")).map(((word: string) => {
-      return {
-        term: word,
-        foundInTitle: false,
-      }
-    })))
-    id++;
-    setMatchedSongs([]);
-    setTitle("");
-    setArtist("");
-  }
-
-  const handleJudulLaguChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
-    checkKeywordsInTitle(e.target.value.toLowerCase());
-  }
-
-  const checkKeywordsInTitle = (title: string) => {
-    if (keywords.length === 0) {
-      return true
-    }
-
-    let currentKeywords = keywords;
-
-    currentKeywords.forEach(keyword => {
-      /** reset to false */
-      keyword.foundInTitle = false;
-      /** mark keyword found in title */
-      if (title.includes(keyword.term)) {
-        keyword.foundInTitle = true;
-      }
-    });
-
-    setKeywords(currentKeywords);
-  }
-
-  return (
-    <div className={`flex min-h-screen w-full flex-col items-center ${initialPage ? "justify-center" : "justify-between"} bg-zinc-50 font-sans dark:bg-radial-[at_50%_75%] dark:from-emerald-950 dark:via-green-700 dark:to-lime-600 dark:to-90% transition`}>
-      <nav>
-        <h1 className={"text-3xl my-3 transition " + msMadi.className + (initialPage ? "" : "")}>Sambung <span className={figtree.className + " font-bold uppercase text-2xl"}>Judul</span></h1>
-      </nav>
-      <main className={"flex w-full max-w-3xl flex-col items-center justify-center py-5 px-5 sm:items-center overflow-x-clip"}>
-        {
-          displayedSongs.length !== 0 ?
-            <SongHistory displayedSongs={displayedSongs} />
-            : null
-        }
-
-        <form action="" className="mb-4">
-          <div className="sm:col-span-4 flex flex-col items-center-safe">
-
-            {initialPage ?
-              null
-              :
-              <motion.label
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                htmlFor="judulLagu"
-                className={inputLabelClassName}
-              >
-                Judul lagu
-              </motion.label>}
-            <input id="judulLagu" name="judulLagu" value={title}
-              onClick={(e) => initialPage ? setInitialPage(false) : setInitialPage(false)}
-              onChange={(e) => handleJudulLaguChange(e)} type="text"
-              className={formInputClassName}
-              placeholder={initialPage ? "Ketik judul untuk mulai" : "Ketik judul lagu"} />
-            <PreviousSongKeywords show={keywords.length !== 0} keywords={keywords} />
-          </div>
-          <div className={initialPage ? "hidden" : "sm:col-span-4 mt-4 flex flex-col items-center-safe"}>
-            <motion.label
-              initial={{ opacity: 0, }}
-              animate={{ opacity: 1, }}
-              htmlFor="penyanyi"
-              className={inputLabelClassName}
-            >
-              Penyanyi
-            </motion.label>
-            <motion.input
-              initial={{ opacity: 0, }}
-              animate={{ opacity: 1, }}
-              id="penyanyi"
-              name="penyayi"
-              value={artist}
-              onChange={(e) => setArtist(e.target.value)}
-              type="text"
-              className={formInputClassName}
-              placeholder="Ketik nama penyanyi" />
-          </div>
-          <div className={initialPage ? "hidden" : "mt-6 flex items-center justify-center gap-x-6"}>
-            <button type="button" onClick={handleSubmit}
-              className="rounded-full bg-slate-800/50 px-6 py-2 
-            text-sm font-semibold text-white 
-            focus-visible:outline-2 focus-visible:outline-offset-2 
-            focus-visible:outline-neutral-100 focus-visible:scale-110
-            hover:outline-2 hover:outline-offset-2 
-            hover:outline-neutral-100 hover:scale-110
-            active:scale-90 active:bg-slate-800/70 active:inset-shadow-sm 
-            active:inset-shadow-slate-950/70 transition">Cari</button>
-          </div>
-        </form>
-
-        {matchedSongs.length !== 0 ? <SearchResult matchedSongs={matchedSongs} addNewSong={addNewSong} /> : null}
-
-
-      </main>
-      <hr />
-      <footer className="flex flex-row gap-2 my-3">
-        <div>Made with MusicBrainz DB |</div>
-        <div>Instagram |</div>
-        <div>Github</div>
-      </footer>
-    </div>
-  );
 }
+

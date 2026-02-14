@@ -1,28 +1,56 @@
 import { AnimatePresence } from "motion/react"
 import Song from "../_model/Song"
-import { SongSearchListItem } from "./SongListItem"
+import SongSearchListItem from "./SongSearchListItem"
+import { SearchResultProps } from "../_interfaces/Props"
+import { useEffect, useState } from "react";
+import { getSongList } from "../_utils/api";
 
 /**
  * Renders the search result.
  * @returns List of the songs from the search result.
  */
-export default function SearchResult({ matchedSongs, addNewSong }: { matchedSongs: Song[], addNewSong: Function }) {
-    return <div className="flex flex-col items-center">
-        <div className="mb-2">
-            Manakah lagu yang kamu maksud?
+export default function SearchResult({ searchedSong, addNewSong, previousSongIds }: SearchResultProps) {
+    const searchingForSong = searchedSong.title !== '' && searchedSong.artist !== '';
+    const [matchedSongs, setMatchedSongs] = useState<Array<Song>>([]);
+
+    useEffect(() => {
+        if (searchingForSong) {
+            const { title, artist } = searchedSong;
+            const getMatchedSongs = ({ title, artist, previousSongIds }: { title: string, artist: string, previousSongIds: string[] }) => {
+                // API Call to musicBrainz API
+                return getSongList({ title, artist, previousSongIds });
+            }
+            const fetchSongs = async () => {
+                const songs = await getMatchedSongs({ title, artist, previousSongIds });
+                setMatchedSongs(songs);
+            }
+
+            fetchSongs();
+        }
+
+        return () => {
+            setMatchedSongs([]);
+        };
+    }, [searchingForSong, searchedSong, previousSongIds]);
+
+    if (searchingForSong) {
+        return <div className="flex flex-col items-center">
+            <div className="mb-2">
+                Manakah lagu yang kamu maksud?
+            </div>
+            <ul id="search-result" className="flex flex-col gap-y-3">
+                <AnimatePresence>
+                    {
+                        matchedSongs.map(song => {
+                            return <SongSearchListItem
+                                song={song}
+                                addSong={addNewSong}
+                                key={song.id}
+                            />
+                        })
+                    }
+                </AnimatePresence>
+            </ul>
         </div>
-        <ul id="search-result" className="flex flex-col gap-y-3">
-            <AnimatePresence>
-                {
-                    matchedSongs.map(song => {
-                        return <SongSearchListItem
-                            song={song}
-                            addSong={addNewSong}
-                            key={song.id}
-                        />
-                    })
-                }
-            </AnimatePresence>
-        </ul>
-    </div>
+    }
 }
