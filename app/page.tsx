@@ -118,27 +118,25 @@ export default function Home() {
                 reference={howToModal}
                 closeModal={closeHowToModal}
             >
-                <p>
-                    <ol className='list-decimal ms-6'>
-                        <li>
-                            Ketik judul lagu dan nama penyanyi pada kolom input.
-                        </li>
-                        <li>
-                            Tekan tombol &apos;Cari&apos;
-                        </li>
-                        <li>
-                            Cari lagu yang diinginkan pada daftar hasil pencarian.
-                        </li>
-                        <li>
-                            Tekan tombol panah kanan (&gt;) untuk menambahkan lagu
-                            ke daftar lagu permainan.
-                        </li>
-                        <li>
-                            Ulangi Langkah 1, tapi sekarang judul lagu harus mengandung
-                            minimal satu kata dari lagu sebelumnya!
-                        </li>
-                    </ol>
-                </p>
+                <ol className='list-decimal ms-6'>
+                    <li>
+                        Ketik judul lagu dan nama penyanyi pada kolom input.
+                    </li>
+                    <li>
+                        Tekan tombol &apos;Cari&apos;
+                    </li>
+                    <li>
+                        Cari lagu yang diinginkan pada daftar hasil pencarian.
+                    </li>
+                    <li>
+                        Tekan tombol panah kanan (&gt;) untuk menambahkan lagu
+                        ke daftar lagu permainan.
+                    </li>
+                    <li>
+                        Ulangi Langkah 1, tapi sekarang judul lagu harus mengandung
+                        minimal satu kata dari lagu sebelumnya!
+                    </li>
+                </ol>
             </SimpleModal>
         </div>
 
