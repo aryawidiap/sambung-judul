@@ -36,6 +36,7 @@ export default function Home() {
     const [latestSongTitle, setLatestSongTitle] = useState('');
     const [initialPage, setInitialPage] = useState(true);
     const [searchedSong, setSearchedSong] = useState({ title: '', artist: '' });
+    const version = '0.1.0';
 
     const aboutModal = useRef<HTMLDialogElement>(null);
     const howToModal = useRef<HTMLDialogElement>(null);
@@ -112,6 +113,7 @@ export default function Home() {
                     Gim ini terinspirasi dari permainan yang dilakukan pengembang aplikasi saat sedang
                     jalan-jalan bersama teman.
                 </p>
+                <p className='italic font-bold mt-4 text-xs'>versi {version}</p>
             </SimpleModal>
             <SimpleModal
                 header='Cara Bermain'
