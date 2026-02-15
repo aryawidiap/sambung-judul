@@ -51,53 +51,46 @@ export default function SearchForm({ showFullForm, openMainPage, setSearchedSong
         return finalKeywords;
     }
 
+    const getKeywords = (newTitle: string, previousTitle: string) => {
+        const rawKeywords = extractKeywords(previousTitle);
+        return checkKeywordsInTitle(newTitle, rawKeywords);
+    }
+
+    const checkKeywordsInTitle = (title: string, keywords: Array<{ term: string, foundInTitle: boolean }>) => {
+        if (keywords.length === 0) {
+            return [];
+        }
+
+        const lowerCaseTitle = title.toLowerCase();
+
+        const currentKeywords = keywords;
+
+        /**
+         * @todo Ganti jadi map
+         */
+        currentKeywords.forEach(keyword => {
+            /** reset to false */
+            keyword.foundInTitle = false;
+            /** mark keyword found in title */
+            if (lowerCaseTitle.includes(keyword.term)) {
+                keyword.foundInTitle = true;
+            }
+        });
+
+        return currentKeywords;
+    }
+
     const [title, setTitle] = useState('');
     const [artist, setArtist] = useState('');
-    const [keywords, setKeywords] = useState<Array<{ term: string, foundInTitle: boolean }>>([]);
-    const testKeywords = extractKeywords(latestSongTitle);
-    const historyIsNotEmpty = latestSongTitle !== undefined; //latestSong.title === '' || latestSong.artist === '';
+    const keywords = getKeywords(title, latestSongTitle);
 
     useEffect(() => {
-
-
         return () => {
             setTitle('');
             setArtist('');
             console.log(latestSongTitle);
         };
-    }, [latestSongTitle]);
-
-    // if (historyIsNotEmpty) {
-    //     console.log("latest song is ", latestSongTitle);
-
-    //     // setKeywords(removeStopwords(latestSong.title.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").split(" ")).map(((word: string) => {
-    //     //     return {
-    //     //         term: word,
-    //     //         foundInTitle: false,
-    //     //     }
-    //     // })));
-    // }
-
-
-
-    const checkKeywordsInTitle = (title: string) => {
-        if (keywords.length === 0) {
-            return true
-        }
-
-        const currentKeywords = keywords;
-
-        currentKeywords.forEach(keyword => {
-            /** reset to false */
-            keyword.foundInTitle = false;
-            /** mark keyword found in title */
-            if (title.includes(keyword.term)) {
-                keyword.foundInTitle = true;
-            }
-        });
-
-        setKeywords(currentKeywords);
-    }
+    }, [latestSongTitle]);    
 
     const handleTitleInputClick = () => {
         if (!showFullForm) {
@@ -107,7 +100,6 @@ export default function SearchForm({ showFullForm, openMainPage, setSearchedSong
 
     const handleTitleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setTitle(event.target.value);
-        checkKeywordsInTitle(event.target.value.toLowerCase());
     }
 
     const handleArtistChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -119,13 +111,11 @@ export default function SearchForm({ showFullForm, openMainPage, setSearchedSong
     const handleSubmit = () => {
         if (keywordHit) {
             setSearchedSong({ title, artist });
-            // setMatchedSongs(await getMatchedSongs());
         }
     }
 
     return (
         <form action="" className="mb-4">
-            <div>{latestSongTitle}</div>
             <div className="sm:col-span-4 flex flex-col items-center-safe">
                 <motion.label
                     initial={{ opacity: 0, height: 0 }}
@@ -140,7 +130,7 @@ export default function SearchForm({ showFullForm, openMainPage, setSearchedSong
                     onChange={handleTitleChange} type="text"
                     className={formInputClassName}
                     placeholder={showFullForm ? "Ketik judul lagu" : "Ketik judul untuk mulai"} />
-                <PreviousSongKeywords show={testKeywords.length !== 0} keywords={testKeywords} />
+                <PreviousSongKeywords show={keywords.length !== 0} keywords={keywords} />
             </div>
 
             <div className={showFullForm ? "sm:col-span-4 mt-4 flex flex-col items-center-safe" : "hidden"}>
