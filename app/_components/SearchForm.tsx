@@ -62,20 +62,18 @@ export default function SearchForm({ showFullForm, openMainPage, setSearchedSong
         }
 
         const lowerCaseTitle = title.toLowerCase();
-
-        const currentKeywords = keywords;
-
-        /**
-         * @todo Ganti jadi map
-         */
-        currentKeywords.forEach(keyword => {
-            /** reset to false */
-            keyword.foundInTitle = false;
-            /** mark keyword found in title */
+        const currentKeywords = keywords.map((keyword) => {
             if (lowerCaseTitle.includes(keyword.term)) {
-                keyword.foundInTitle = true;
+                return {
+                    term: keyword.term,
+                    foundInTitle: true,
+                }
             }
-        });
+            return {
+                term: keyword.term,
+                foundInTitle: false,
+            }
+        })
 
         return currentKeywords;
     }
@@ -90,7 +88,7 @@ export default function SearchForm({ showFullForm, openMainPage, setSearchedSong
             setArtist('');
             console.log(latestSongTitle);
         };
-    }, [latestSongTitle]);    
+    }, [latestSongTitle]);
 
     const handleTitleInputClick = () => {
         if (!showFullForm) {
