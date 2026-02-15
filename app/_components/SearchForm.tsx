@@ -90,7 +90,7 @@ export default function SearchForm({ showFullForm, openMainPage, setSearchedSong
         };
     }, [latestSongTitle]);
 
-    const handleTitleInputClick = () => {
+    const handleTitleInputFocus = () => {
         if (!showFullForm) {
             openMainPage();
         }
@@ -124,7 +124,8 @@ export default function SearchForm({ showFullForm, openMainPage, setSearchedSong
                     Judul lagu
                 </motion.label>
                 <input id="judulLagu" name="judulLagu" value={title}
-                    onClick={handleTitleInputClick}
+                    // onClick={handleTitleInputClick}
+                    onFocus={handleTitleInputFocus}
                     onChange={handleTitleChange} type="text"
                     className={formInputClassName}
                     placeholder={showFullForm ? "Ketik judul lagu" : "Ketik judul untuk mulai"} />
