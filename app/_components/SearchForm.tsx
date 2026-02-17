@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconProp, library } from '@fortawesome/fontawesome-svg-core'
 /* import all the icons in Free Solid, Free Regular, and Brands styles */
 import { fas } from '@fortawesome/free-solid-svg-icons'
+import { searchForm } from "../_utils/content";
 
 
 export default function SearchForm({ showFullForm, openMainPage, setSearchedSong, latestSongTitle }: SearchFormProps) {
@@ -81,6 +82,11 @@ export default function SearchForm({ showFullForm, openMainPage, setSearchedSong
     const [title, setTitle] = useState('');
     const [artist, setArtist] = useState('');
     const keywords = getKeywords(title, latestSongTitle);
+    const {
+        title: titleContent,
+        artist: artistContent,
+        submitButton: submitButtonContent,
+    } = searchForm;
 
     useEffect(() => {
         return () => {
@@ -118,17 +124,21 @@ export default function SearchForm({ showFullForm, openMainPage, setSearchedSong
                 <motion.label
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
-                    htmlFor="judulLagu"
-                    className={inputLabelClassName + (showFullForm ? null : " hidden")}
+                    htmlFor="songTitle"
+                    className={inputLabelClassName + (showFullForm ? "" : " hidden")}
                 >
-                    Judul lagu
+                    {titleContent.label['en']}
                 </motion.label>
-                <input id="judulLagu" name="judulLagu" value={title}
-                    // onClick={handleTitleInputClick}
+                <input id="songTitle" name="songTitle" value={title}
                     onFocus={handleTitleInputFocus}
                     onChange={handleTitleChange} type="text"
                     className={formInputClassName}
-                    placeholder={showFullForm ? "Ketik judul lagu" : "Ketik judul untuk mulai"} />
+                    placeholder={
+                        showFullForm
+                            ? titleContent.placeholder.initialPage['en']
+                            : titleContent.placeholder.fullForm['en']
+                    }
+                />
                 <PreviousSongKeywords show={keywords.length !== 0} keywords={keywords} />
             </div>
 
@@ -136,25 +146,25 @@ export default function SearchForm({ showFullForm, openMainPage, setSearchedSong
                 <motion.label
                     initial={{ opacity: 0, }}
                     animate={{ opacity: 1, }}
-                    htmlFor="penyanyi"
+                    htmlFor="artist"
                     className={inputLabelClassName}
                 >
-                    Penyanyi
+                    {artistContent.label['en']}
                 </motion.label>
                 <motion.input
                     initial={{ opacity: 0, }}
                     animate={{ opacity: 1, }}
-                    id="penyanyi"
-                    name="penyayi"
+                    id="artist"
+                    name="artist"
                     value={artist}
                     onChange={handleArtistChange}
                     type="text"
                     className={formInputClassName}
-                    placeholder="Ketik nama penyanyi" />
+                    placeholder={artistContent.placeholder['en']} />
             </div>
             <div className={showFullForm ? "mt-6 flex items-center justify-center gap-x-6" : "hidden"}>
                 <button type="button" onClick={handleSubmit}
-                    className={buttonClassName}>Cari</button>
+                    className={buttonClassName}>{submitButtonContent['en']}</button>
             </div>
         </form>
     );
