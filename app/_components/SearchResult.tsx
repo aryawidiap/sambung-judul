@@ -34,11 +34,19 @@ export default function SearchResult({ searchedSong, addNewSong, previousSongIds
     }, [searchingForSong, searchedSong, previousSongIds]);
 
     if (searchingForSong) {
+        if(matchedSongs.length === 0) {
+            return (
+                <div>
+                    Loading song...
+                </div>
+            )
+        }
         return <div className="flex flex-col items-center">
             <div className="mb-2">
                 Manakah lagu yang kamu maksud?
             </div>
-            <ul id="search-result" className="flex flex-col gap-y-3">
+            {/** @todo x is scrolling */}
+            <ul id="search-result" className="flex flex-col items-center gap-y-3 max-h-70 overflow-y-scroll p-2">
                 <AnimatePresence>
                     {
                         matchedSongs.map(song => {
