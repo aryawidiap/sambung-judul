@@ -4,6 +4,7 @@ import SongSearchListItem from "./SongSearchListItem"
 import { SearchResultProps } from "../_interfaces/Props"
 import { useEffect, useState } from "react";
 import { getSongList } from "../_utils/api";
+import Image from "next/image";
 
 /**
  * Renders the search result.
@@ -33,11 +34,16 @@ export default function SearchResult({ searchedSong, addNewSong, previousSongIds
         };
     }, [searchingForSong, searchedSong, previousSongIds]);
 
+    /**
+     * @todo handle if no song match found
+     */
+
     if (searchingForSong) {
-        if(matchedSongs.length === 0) {
+        if (matchedSongs.length === 0) {
             return (
-                <div>
-                    Loading song...
+                <div className="animate-pulse">
+                    <Image src='/loading-songs-smaller-magnifier.gif' width='200' height='200' alt="loading icon" />
+                    <p className="text-center tracking-wider">Loading songs</p>
                 </div>
             )
         }
