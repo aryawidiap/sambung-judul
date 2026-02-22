@@ -1,7 +1,7 @@
 'use client'
 import { Ms_Madi } from 'next/font/google'
 import { figtree } from "./fonts";
-import { ChangeEvent, use, useRef, useState } from "react";
+import { ChangeEvent, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import Song from "./_model/Song";
 import { FaBars, FaClockRotateLeft, FaInfo, FaPlus, FaQuestion, FaXmark } from 'react-icons/fa6';
@@ -32,7 +32,22 @@ const msMadi = Ms_Madi({
  * @returns The main page component
  */
 export default function Home() {
-    const [songs, setSongs] = useState<Array<Song>>([]);
+    const getHistoryFromStorage = () => {
+        if (typeof window !== 'undefined') {
+            const history = localStorage.getItem('history');
+
+            if (history) {
+                const pastSongs = JSON.parse(history);
+                console.log(pastSongs);
+                return pastSongs;
+            } else {
+                return [];
+            }
+        }
+        return [];
+    };
+
+    const [songs, setSongs] = useState<Array<Song>>(() => getHistoryFromStorage());
     const [latestSongTitle, setLatestSongTitle] = useState('');
     const [initialPage, setInitialPage] = useState(true);
     const [searchedSong, setSearchedSong] = useState({ title: '', artist: '' });
@@ -83,7 +98,20 @@ export default function Home() {
         }
     }
 
+    const startNewGame = () => {
+        localStorage.removeItem('history');
+        setSongs([]);
+        setSearchedSong({ title: '', artist: '' });
+        setLatestSongTitle('');
+    }
+
     const previousSongIds = songs.map(song => song.id);
+    const newGame = songs.length === 0;
+    const newGameButtonClassName = newGame ?
+        "position-absolute cursor-not-allowed opacity-50"
+        : "position-absolute cursor-pointer hover:*:fill-blue-200";
+
+
 
     return (
         <div className='min-h-screen w-full bg-zinc-50 font-sans dark:bg-radial-[at_50%_75%] dark:from-emerald-950 dark:via-green-700 dark:to-lime-600 dark:to-90% relative'>
@@ -93,7 +121,7 @@ export default function Home() {
                     <div className='flex flex-row gap-3 justify-center'>
                         <button className="position-absolute cursor-pointer hover:*:fill-blue-200" onClick={openAboutModal}><FaInfo /></button>
                         <button className="position-absolute cursor-pointer hover:*:fill-blue-200" onClick={openHowToModal}><FaQuestion /></button>
-                        <button className="position-absolute cursor-pointer hover:*:fill-blue-200"><FaPlus /></button>
+                        <button className={newGameButtonClassName} onClick={startNewGame} disabled={songs.length === 0}><FaPlus /></button>
                     </div>
                 </nav>
                 <main className={"flex w-full max-w-3xl flex-col items-center justify-center py-5 px-5 sm:items-center overflow-x-clip"}>
