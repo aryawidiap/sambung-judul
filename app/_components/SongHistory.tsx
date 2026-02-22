@@ -31,31 +31,37 @@ export default function SongHistory({ displayedSongs }: { displayedSongs: Song[]
         4: 'absolute left-[-9rem]',
     } as { [key: number]: string };
 
-    if (displayedSongs.length !== 0) {
-        return (
-            <motion.ul
-                initial={{ height: 0 }}
-                animate={{ height: "auto" }}
-                id="history"
-                className="flex flex-row items-center relative mb-3"
-            >
-                <AnimatePresence>
-                    {
-                        displayedSongs.map((song, index) => {
-                            const numberOfDisplayedSongs = displayedSongs.length;
-                            const variableClassName = ` ${blurClass[numberOfDisplayedSongs - index]} ${scaleClass[numberOfDisplayedSongs - index]} ${offsetClass[numberOfDisplayedSongs - index]}`;
+    const historyNotEmpty = displayedSongs.length !== 0;
+    return (
+        <AnimatePresence>
+            {
+                historyNotEmpty &&
+                <motion.ul
+                    initial={{ height: 0 }}
+                    animate={{ height: "auto" }}
+                    exit={{ opacity: 0 }}
+                    id="history"
+                    className="flex flex-row items-center relative mb-3"
+                >
+                    <AnimatePresence>
+                        {
+                            displayedSongs.map((song, index) => {
+                                const numberOfDisplayedSongs = displayedSongs.length;
+                                const variableClassName = ` ${blurClass[numberOfDisplayedSongs - index]} ${scaleClass[numberOfDisplayedSongs - index]} ${offsetClass[numberOfDisplayedSongs - index]}`;
 
-                            return (
-                                <SongHistoryListItem
-                                    song={song}
-                                    className={variableClassName}
-                                    key={song.id}
-                                />
-                            );
-                        })
-                    }
-                </AnimatePresence>
-            </motion.ul>
-        );
-    }
+                                return (
+                                    <SongHistoryListItem
+                                        song={song}
+                                        className={variableClassName}
+                                        key={song.id}
+                                    />
+                                );
+                            })
+                        }
+                    </AnimatePresence>
+                </motion.ul>
+            }
+        </AnimatePresence>
+
+    );
 }
