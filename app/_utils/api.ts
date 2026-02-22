@@ -45,7 +45,9 @@ export async function getSongList({ title, artist, previousSongIds }: { title: s
         const data = await response.json();
         // console.log(data);
 
-
+        /**
+         * @todo Handle if no song match
+         */
         const songList = (data.recordings.map((song: any) => {
             const releaseId = song['releases'][0]['id'];
 
@@ -62,7 +64,7 @@ export async function getSongList({ title, artist, previousSongIds }: { title: s
             .filter((song) => !previousSongIds.includes(song.id));
 
         const songCoverArtLinks = await Promise.all(songList.map((song) => getSongCoverArt(song.releaseId)))
-        console.log(songCoverArtLinks)
+        // console.log(songCoverArtLinks)
 
         const songListWithImage = songList.map((song, index) => {
             return {
