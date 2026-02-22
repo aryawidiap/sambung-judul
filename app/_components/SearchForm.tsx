@@ -29,7 +29,7 @@ export default function SearchForm({ showFullForm, openMainPage, setSearchedSong
         font-semibold \
         transition " + (showFullForm ? "text-grey" : "text-white");
     const buttonClassName = "rounded-full bg-slate-800/50 px-6 py-2 \
-        text-sm font-semibold text-white \
+        text-sm font-semibold text-white outline-1 \
         focus-visible:outline-2 focus-visible:outline-offset-2 \
         focus-visible:outline-neutral-100 focus-visible:scale-110 \
         hover:outline-2 hover:outline-offset-2 \
