@@ -42,8 +42,10 @@ export default function SearchForm({ showFullForm, openMainPage, setSearchedSong
             return [];
         }
 
-        const songTitleWithoutStopwords = removeStopwords(songTitle.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").split(" "))
-        const finalKeywords = songTitleWithoutStopwords.map(((word: string) => {
+        const titleWithoutPunctuation = songTitle.toLowerCase().replace(/[.,\/#!$%?\^&\*;:{}=\-_`~()]/g, "");
+        const wordsInTitle = titleWithoutPunctuation.split(" ");
+        const wordsInTitleWithoutStopwords = removeStopwords(wordsInTitle)
+        const finalKeywords = wordsInTitleWithoutStopwords.map(((word: string) => {
             return {
                 term: word,
                 foundInTitle: false,
