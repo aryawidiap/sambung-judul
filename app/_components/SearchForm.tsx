@@ -92,7 +92,6 @@ export default function SearchForm({ showFullForm, openMainPage, setSearchedSong
         return () => {
             setTitle('');
             setArtist('');
-            console.log(latestSongTitle);
         };
     }, [latestSongTitle]);
 
