@@ -4,7 +4,7 @@ import Song from "../_model/Song";
  * Getting the cover art of a song by calling  API
  * @returns url of the cover art image
  */
-export async function getSongCoverArt (releaseMbid: string) {
+export async function getSongCoverArt(releaseMbid: string) {
     try {
         const url = encodeURI(`http://coverartarchive.org/release/${encodeURIComponent(releaseMbid)}`);
         const response = await fetch(
@@ -16,13 +16,27 @@ export async function getSongCoverArt (releaseMbid: string) {
                 }
             }
         );
-        const data = await response.json();
-        console.log(data);
 
-        const imageData = data['images'][0];
-        const thumbnailLink = imageData['thumbnails']['500'] as string;
+        if (response.ok) {
+            const data = await response.json();
+            const imageData = data['images'][0];
+            const thumbnailLink = imageData['thumbnails']['500'] as string;
 
-        return thumbnailLink;
+            if (thumbnailLink) {
+                return thumbnailLink;
+            }
+
+            return '';
+        } else {
+            // not found, just return empty string
+            if (response.status === 404) {
+                return '';
+            }
+            // other errors, might be important to know
+            throw 'An error that is not a \'not found\' error occurs: \n'
+            + response.status
+            + response.statusText;
+        }
     } catch (error) {
         console.log(error);
     }
@@ -44,6 +58,7 @@ export async function getSongList({ title, artist, previousSongIds }: { title: s
         );
         const data = await response.json();
         // console.log(data);
+        // console.log(data);
 
         /**
          * @todo Handle if no song match
@@ -64,8 +79,6 @@ export async function getSongList({ title, artist, previousSongIds }: { title: s
             .filter((song) => !previousSongIds.includes(song.id));
 
         const songCoverArtLinks = await Promise.all(songList.map((song) => getSongCoverArt(song.releaseId)))
-        // console.log(songCoverArtLinks)
-
         const songListWithImage = songList.map((song, index) => {
             return {
                 id: song.id,
@@ -76,8 +89,6 @@ export async function getSongList({ title, artist, previousSongIds }: { title: s
                 releaseId: song.releaseId,
             } as Song;
         })
-
-
         return songListWithImage;
     } catch (error) {
         console.log(error);

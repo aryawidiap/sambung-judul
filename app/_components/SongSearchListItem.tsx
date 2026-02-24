@@ -11,10 +11,7 @@ export default function SongSearchListItem({ song, addSong }: SongSearchListItem
     library.add(fas);
     // @ts-expect-error Type '"fa-solid fa-angle-right"' is not assignable to type 'IconProp'.
     const angleRightIcon: IconProp = "fa-solid fa-angle-right";
-    console.log(song.id);
-    if (song.songCoverArtLink !== '') {
-
-    }
+    
     return (
         <motion.li
             initial={{ opacity: 0 }}
