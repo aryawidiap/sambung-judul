@@ -1,7 +1,7 @@
 'use client'
 import { Ms_Madi } from 'next/font/google'
 import { figtree } from "./fonts";
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import Song from "./_model/Song";
 import { FaBars, FaClockRotateLeft, FaInfo, FaPlus, FaQuestion, FaXmark } from 'react-icons/fa6';
@@ -38,7 +38,6 @@ export default function Home() {
 
             if (history) {
                 const pastSongs = JSON.parse(history);
-                console.log(pastSongs);
                 return pastSongs;
             } else {
                 return [];
@@ -47,16 +46,13 @@ export default function Home() {
         return [];
     };
 
-    const [songs, setSongs] = useState<Array<Song>>(() => getHistoryFromStorage());
+    const [songs, setSongs] = useState<Array<Song>>([]);
     const [latestSongTitle, setLatestSongTitle] = useState('');
     const [initialPage, setInitialPage] = useState(true);
     const [searchedSong, setSearchedSong] = useState({ title: '', artist: '' });
-    const version = '0.1.0';
 
     const aboutModal = useRef<HTMLDialogElement>(null);
     const howToModal = useRef<HTMLDialogElement>(null);
-
-    const displayedSongs = songs.slice(-3);
 
     const addNewSong = (song: Song) => {
         setSongs(
@@ -105,13 +101,23 @@ export default function Home() {
         setLatestSongTitle('');
     }
 
+    useEffect(() => {
+        const pastSongs = getHistoryFromStorage();
+        const lastSong = pastSongs.slice(-1).findLast((song: Song) => true);
+        if(lastSong) {
+            setLatestSongTitle(lastSong.title);
+        }
+        setSongs(pastSongs);
+    }, []);
+
+    const version = '0.1.0';
+    const displayedSongs = songs.slice(-3);
+
     const previousSongIds = songs.map(song => song.id);
     const newGame = songs.length === 0;
     const newGameButtonClassName = newGame ?
         "position-absolute cursor-not-allowed opacity-50"
         : "position-absolute cursor-pointer hover:*:fill-blue-200";
-
-
 
     return (
         <div className='min-h-screen w-full bg-zinc-50 font-sans dark:bg-radial-[at_50%_75%] dark:from-emerald-950 dark:via-green-700 dark:to-lime-600 dark:to-90% relative'>
