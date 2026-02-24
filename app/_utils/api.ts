@@ -57,14 +57,25 @@ export async function getSongList({ title, artist, previousSongIds }: { title: s
             }
         );
         const data = await response.json();
-        // console.log(data);
-        // console.log(data);
 
         /**
          * @todo Handle if no song match
          */
         const songList = (data.recordings.map((song: any) => {
-            const releaseId = song['releases'][0]['id'];
+            const releases = song['releases'];
+            if (!releases) {
+                return null;
+            }
+
+            const firstRelease = releases[0]
+            if (!firstRelease) {
+                return null;
+            }
+
+            const firstReleaseId = song['releases'][0]['id'];
+            if (!firstReleaseId) {
+                return null;
+            }
 
             return {
                 id: song["id"],
@@ -72,10 +83,11 @@ export async function getSongList({ title, artist, previousSongIds }: { title: s
                 year: song["first-release-date"] ? song["first-release-date"].split('-')[0] : 'unknown',
                 artist: song["artist-credit"][0]["name"],
                 songCoverArtLink: '',
-                releaseId: releaseId,
-            } as Song
+                releaseId: firstReleaseId,
+            } as Song;
         }) as Song[])
             // do not include all the songs already added to history
+            .filter((song) => song !== null)
             .filter((song) => !previousSongIds.includes(song.id));
 
         const songCoverArtLinks = await Promise.all(songList.map((song) => getSongCoverArt(song.releaseId)))
