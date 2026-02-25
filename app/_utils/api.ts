@@ -72,7 +72,7 @@ export async function getSongList({ title, artist, previousSongIds }: { title: s
                 return null;
             }
 
-            const firstReleaseId = song['releases'][0]['id'];
+            const firstReleaseId = firstRelease['id'];
             if (!firstReleaseId) {
                 return null;
             }
