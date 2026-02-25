@@ -52,7 +52,7 @@ export default function SearchResult({ searchedSong, addNewSong, previousSongIds
                 Manakah lagu yang kamu maksud?
             </div>
             {/** @todo x is scrolling */}
-            <ul id="search-result" className="flex flex-col items-center gap-y-3 max-h-70 overflow-y-scroll p-2">
+            <ul id="search-result" className="flex flex-col items-center gap-y-3 max-h-70 overflow-x-clip overflow-y-scroll py-2 px-4 snap-y">
                 <AnimatePresence>
                     {
                         matchedSongs.map(song => {
