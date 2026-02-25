@@ -110,7 +110,7 @@ export default function Home() {
         setSongs(pastSongs);
     }, []);
 
-    const version = '0.1.0';
+    const version = '0.1.1';
     const displayedSongs = songs.slice(-3);
 
     const previousSongIds = songs.map(song => song.id);
