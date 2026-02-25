@@ -2,7 +2,7 @@
 * Contents for localization
 */
 
-export const main = {
+export const mainPage = {
     about: {
         header: {
             id: 'Tentang Sambung Judul',
@@ -10,10 +10,10 @@ export const main = {
         },
         content: {
             id: 'Sambung Judul adalah gim yang menggabungkan permainan sambung kata dengan permainan asosiasi lagu. Gim ini terinspirasi dari permainan yang dilakukan pengembang aplikasi saat sedang jalan-jalan bersama teman.',
-            en: '',
+            en: 'Sambung Judul is a game that combines word chain and song association game. The creation of this game was inspired by an impromptu game played by the developer and his friends when travelling.',
         },
     },
-    howto: {
+    howTo: {
         header: {
             id: 'Cara Bermain',
             en: 'How to Play',
@@ -21,38 +21,46 @@ export const main = {
         content: {
             id: [
                 {
+                    stepNumber: 1,
                     image: '',
-                    step: 'Ketik judul lagu dan nama penyanyi pada kolom input.'
+                    description: 'Ketik judul lagu dan nama penyanyi pada kolom input.'
                 },
                 {
+                    stepNumber: 2,
                     image: '',
-                    step: 'Tekan tombol &apos;Cari&apos;'
+                    description: 'Tekan tombol "Cari"'
                 },
                 {
+                    stepNumber: 3,
                     image: '',
-                    step: 'Tekan tombol panah kanan (&gt;) untuk menambahkan lagu ke daftar lagu permainan.'
+                    description: 'Tekan tombol panah kanan \> untuk menambahkan lagu ke daftar lagu permainan.'
                 },
                 {
+                    stepNumber: 4,
                     image: '',
-                    step: 'Ulangi Langkah 1, tapi sekarang judul lagu harus mengandung minimal satu kata dari lagu sebelumnya!'
+                    description: 'Ulangi Langkah 1, tetapi sekarang judul lagu harus mengandung minimal satu kata dari lagu sebelumnya. Selamat bermain!'
                 },
             ],
             en: [
                 {
+                    stepNumber: 1,
                     image: '',
-                    step: 'Ketik judul lagu dan nama penyanyi pada kolom input.'
+                    description: 'Type the title of the song and the artist in their respective field.'
                 },
                 {
+                    stepNumber: 2,
                     image: '',
-                    step: 'Tekan tombol &apos;Cari&apos;'
+                    description: 'Click the "Search" button'
                 },
                 {
+                    stepNumber: 3,
                     image: '',
-                    step: 'Tekan tombol panah kanan (&gt;) untuk menambahkan lagu ke daftar lagu permainan.'
+                    description: 'Click the right arrow  sign (>) to add the song to current game\'s song list'
                 },
                 {
+                    stepNumber: 4,
                     image: '',
-                    step: 'Ulangi Langkah 1, tapi sekarang judul lagu harus mengandung minimal satu kata dari lagu sebelumnya!'
+                    description: 'Repeat Step 1, but now, the title of the new song has to contain one of words from the previous song. Have fun playing!'
                 },
             ],
         },
@@ -61,6 +69,17 @@ export const main = {
         id: "Mulai permainan baru",
         en: 'Start a new game,'
     },
+    madeWith: {
+        id: "",
+        en: ""
+    }
+}
+
+export const footer = {
+    madeWith: {
+        id: "Dibuat dengan MusicBrainz DB",
+        en: "Developed with MusicBrainz DB",
+    }
 }
 
 export const searchForm = {
