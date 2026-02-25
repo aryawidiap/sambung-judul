@@ -1,10 +1,9 @@
 'use client'
 import { Ms_Madi } from 'next/font/google'
-import { figtree } from "./fonts";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import Song from "./_model/Song";
-import { FaBars, FaClockRotateLeft, FaInfo, FaPlus, FaQuestion, FaXmark } from 'react-icons/fa6';
+import { FaBars, FaClockRotateLeft, FaXmark } from 'react-icons/fa6';
 
 // DO NOT DELETE
 import { removeStopwords, eng } from 'stopword';
@@ -19,12 +18,15 @@ import SearchResult from './_components/SearchResult';
 import SearchForm from './_components/SearchForm';
 import Footer from './_components/Footer';
 import SimpleModal from './_components/SimpleModal';
+import { mainPage } from './_utils/content';
+import { Navigation } from './_components/Navigation';
+import LanguageContext, { LanguageContextType } from './_context/LanguageContext';
 library.add(fas)
 
 /**
  * `const` for the font used in "Sambung Judul" header.
  */
-const msMadi = Ms_Madi({
+export const msMadi = Ms_Madi({
     weight: ['400'],
 });
 
@@ -50,6 +52,7 @@ export default function Home() {
     const [latestSongTitle, setLatestSongTitle] = useState('');
     const [initialPage, setInitialPage] = useState(true);
     const [searchedSong, setSearchedSong] = useState({ title: '', artist: '' });
+    const [language, setLanguage] = useState<LanguageContextType>('en');
 
     const aboutModal = useRef<HTMLDialogElement>(null);
     const howToModal = useRef<HTMLDialogElement>(null);
@@ -101,10 +104,22 @@ export default function Home() {
         setLatestSongTitle('');
     }
 
+    const changeLanguage = (newLanguage: string) => {
+        if(newLanguage === 'id') {
+            setLanguage(newLanguage);
+        }
+
+        if(newLanguage === 'en') {
+            setLanguage(newLanguage);
+        }
+        
+        localStorage.setItem('preferredLanguage', language);
+    }
+
     useEffect(() => {
         const pastSongs = getHistoryFromStorage();
         const lastSong = pastSongs.slice(-1).findLast((song: Song) => true);
-        if(lastSong) {
+        if (lastSong) {
             setLatestSongTitle(lastSong.title);
         }
         setSongs(pastSongs);
@@ -112,70 +127,55 @@ export default function Home() {
 
     const version = '0.1.1';
     const displayedSongs = songs.slice(-3);
-
     const previousSongIds = songs.map(song => song.id);
     const newGame = songs.length === 0;
-    const newGameButtonClassName = newGame ?
-        "position-absolute cursor-not-allowed opacity-50"
-        : "position-absolute cursor-pointer hover:*:fill-blue-200";
+    const {
+        about: aboutContent,
+        howTo: howToContent,
+        newGame: newGameContent,
+    } = mainPage;
 
     return (
-        <div className='min-h-screen w-full bg-zinc-50 font-sans dark:bg-radial-[at_50%_75%] dark:from-emerald-950 dark:via-green-700 dark:to-lime-600 dark:to-90% relative'>
-            <div className={`flex min-h-screen w-full flex-col items-center ${initialPage ? "justify-center" : "justify-between"}  transition`}>
-                <nav>
-                    <h1 className={"text-3xl my-3 transition " + msMadi.className + (initialPage ? "" : "")}>Sambung <span className={figtree.className + " font-bold uppercase text-2xl"}>Judul</span></h1>
-                    <div className='flex flex-row gap-3 justify-center'>
-                        <button className="position-absolute cursor-pointer hover:*:fill-blue-200" onClick={openAboutModal}><FaInfo /></button>
-                        <button className="position-absolute cursor-pointer hover:*:fill-blue-200" onClick={openHowToModal}><FaQuestion /></button>
-                        <button className={newGameButtonClassName} onClick={startNewGame} disabled={songs.length === 0}><FaPlus /></button>
-                    </div>
-                </nav>
-                <main className={"flex w-full max-w-3xl flex-col items-center justify-center py-5 px-5 sm:items-center overflow-x-clip"}>
-                    <SongHistory displayedSongs={displayedSongs} />
-                    <SearchForm showFullForm={!initialPage} openMainPage={openMainPage} setSearchedSong={setSearchedSong} latestSongTitle={latestSongTitle} />
-                    <SearchResult searchedSong={searchedSong} addNewSong={addNewSong} previousSongIds={previousSongIds} />
-                </main>
-                <Footer />
-            </div>
-            <SimpleModal
-                header='Tentang Sambung Judul'
-                reference={aboutModal}
-                closeModal={closeAboutModal}
-            >
-                <p>
-                    Sambung Judul adalah gim yang menggabungkan permainan sambung kata dengan permainan asosiasi lagu.
-                    Gim ini terinspirasi dari permainan yang dilakukan pengembang aplikasi saat sedang
-                    jalan-jalan bersama teman.
-                </p>
-                <p className='italic font-bold mt-4 text-xs'>versi {version}</p>
-            </SimpleModal>
-            <SimpleModal
-                header='Cara Bermain'
-                reference={howToModal}
-                closeModal={closeHowToModal}
-            >
-                <ol className='list-decimal ms-6'>
-                    <li>
-                        Ketik judul lagu dan nama penyanyi pada kolom input.
-                    </li>
-                    <li>
-                        Tekan tombol &apos;Cari&apos;
-                    </li>
-                    <li>
-                        Cari lagu yang diinginkan pada daftar hasil pencarian.
-                    </li>
-                    <li>
-                        Tekan tombol panah kanan (&gt;) untuk menambahkan lagu
-                        ke daftar lagu permainan.
-                    </li>
-                    <li>
-                        Ulangi Langkah 1, tapi sekarang judul lagu harus mengandung
-                        minimal satu kata dari lagu sebelumnya!
-                    </li>
-                </ol>
-            </SimpleModal>
-        </div>
+        <LanguageContext value={language}>
+            <div className='min-h-screen w-full bg-zinc-50 font-sans dark:bg-radial-[at_50%_75%] dark:from-emerald-950 dark:via-green-700 dark:to-lime-600 dark:to-90% relative'>
+                <div className={`flex min-h-screen w-full flex-col items-center ${initialPage ? "justify-center" : "justify-between"}  transition`}>
+                    <Navigation initialPage={initialPage} newGame={newGame} language={language} openAboutModal={openAboutModal} openHowToModal={openHowToModal} startNewGame={startNewGame} changeLanguage={changeLanguage} />
+                    <main className={"flex w-full max-w-3xl flex-col items-center justify-center py-5 px-5 sm:items-center overflow-x-clip"}>
+                        <SongHistory displayedSongs={displayedSongs} />
+                        <SearchForm showFullForm={!initialPage} openMainPage={openMainPage} setSearchedSong={setSearchedSong} latestSongTitle={latestSongTitle} />
+                        <SearchResult searchedSong={searchedSong} addNewSong={addNewSong} previousSongIds={previousSongIds} />
+                    </main>
+                    <Footer />
+                </div>
+                <SimpleModal
+                    header={aboutContent.header[language]}
+                    reference={aboutModal}
+                    closeModal={closeAboutModal}
+                >
+                    <p>
+                        {aboutContent.content[language]}
+                    </p>
+                    <p className='italic font-bold mt-4 text-xs'>versi {version}</p>
+                </SimpleModal>
+                <SimpleModal
+                    header={howToContent.header[language]}
+                    reference={howToModal}
+                    closeModal={closeHowToModal}
+                >
 
+                    <ol className='list-decimal ms-6'>
+                        {howToContent.content[language].map((step) => {
+                            return (
+                                <li key={step.stepNumber}>
+                                    {step.description}
+                                </li>
+                            )
+                        })}
+                    </ol>
+                </SimpleModal>
+            </div>
+        </LanguageContext>
     );
 }
+
 

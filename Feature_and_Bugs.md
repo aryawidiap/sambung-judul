@@ -10,8 +10,16 @@
 ### Issues
 
 - Non english words are included in the keywords. [on progress]
-- Search list is scrolling in the x direction.
 - Title without keywords can slip through because the API calling result includes search for each word of the title.
+
+## 0.1.2
+
+`Coming soon`
+
+### Bug and other fixes
+
+- Solved search list horizontal scrolling by clipping and adding padding, helped by the removal of tooltip in favor of animated title.
+- 
 
 ## 0.1.1 (first alpha fix)
 
