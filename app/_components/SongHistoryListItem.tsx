@@ -18,7 +18,7 @@ export default function SongHistoryListItem({ song, className }: SongHistoryList
             id={song.id}
             className={"transition duration-500 ease-in-out outline rounded-xl bg-white/50 backdrop-blur-xs w-xs " + className}>
 
-            <SongDetails song={song} />
+            <SongDetails song={song} expandTitleFromExternal={false}/>
         </motion.li>
 
     );

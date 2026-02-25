@@ -30,7 +30,7 @@ export default function SongSearchListItem({ song, addSong }: SongSearchListItem
             exit={{ opacity: 0 }}
             id={song.id}
             className="outline rounded-xl bg-white/50 backdrop-blur-xs relative w-xs ">
-            <SongDetails song={song} buttonFocus={addButtonIsFocused}/>
+            <SongDetails song={song} expandTitleFromExternal={addButtonIsFocused}/>
             <button className="ps-5 absolute inset-y-0 right-0 snap-start scroll-mt-2 scroll-smooth
       text-white/50
       hover:bg-linear-to-r hover:from-white/0 hover:to-white/80 

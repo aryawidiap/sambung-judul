@@ -2,9 +2,9 @@ import { AnimatePresence, motion } from "motion/react";
 import Song from "../_model/Song";
 import SongImage from "./SongImage";
 
-export default function SongDetails({ song, buttonFocus }: { song: Song, buttonFocus: boolean }) {
+export default function SongDetails({ song, expandTitleFromExternal }: { song: Song, expandTitleFromExternal: boolean }) {
 
-    if (buttonFocus) {
+    if (expandTitleFromExternal) {
         console.log('Button is focus');
 
     }
@@ -18,8 +18,8 @@ export default function SongDetails({ song, buttonFocus }: { song: Song, buttonF
                     <AnimatePresence>
                         <motion.h3
                             style={{
-                                height: buttonFocus ? "auto" : "1lh",
-                                textWrap: buttonFocus ? "wrap" : "nowrap"
+                                height: expandTitleFromExternal ? "auto" : "1lh",
+                                textWrap: expandTitleFromExternal ? "wrap" : "nowrap"
                             }}
                             transition={{ ease: "easeInOut" }}
                             whileHover={{ height: "auto", textWrap: "wrap" }}
