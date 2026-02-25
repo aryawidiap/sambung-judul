@@ -1,5 +1,5 @@
 import { SearchFormProps } from "../_interfaces/Props";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import PreviousSongKeywords from "./PreviousSongKeywords";
 // DO NOT DELETE
@@ -10,6 +10,7 @@ import { IconProp, library } from '@fortawesome/fontawesome-svg-core'
 /* import all the icons in Free Solid, Free Regular, and Brands styles */
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { searchForm } from "../_utils/content";
+import LanguageContext from "../_context/LanguageContext";
 
 
 export default function SearchForm({ showFullForm, openMainPage, setSearchedSong, latestSongTitle }: SearchFormProps) {
@@ -90,6 +91,7 @@ export default function SearchForm({ showFullForm, openMainPage, setSearchedSong
 
     const [title, setTitle] = useState('');
     const [artist, setArtist] = useState('');
+    const language = useContext(LanguageContext);
     const keywords = getKeywords(title, latestSongTitle);
     const {
         title: titleContent,
@@ -135,7 +137,7 @@ export default function SearchForm({ showFullForm, openMainPage, setSearchedSong
                     htmlFor="songTitle"
                     className={inputLabelClassName + (showFullForm ? "" : " hidden")}
                 >
-                    {titleContent.label['en']}
+                    {titleContent.label[language]}
                 </motion.label>
                 <input id="songTitle" name="songTitle" value={title}
                     onFocus={handleTitleInputFocus}
@@ -143,8 +145,8 @@ export default function SearchForm({ showFullForm, openMainPage, setSearchedSong
                     className={formInputClassName}
                     placeholder={
                         showFullForm
-                            ? titleContent.placeholder.initialPage['en']
-                            : titleContent.placeholder.fullForm['en']
+                            ? titleContent.placeholder.initialPage[language]
+                            : titleContent.placeholder.fullForm[language]
                     }
                 />
                 <PreviousSongKeywords show={keywords.length !== 0} keywords={keywords} />
@@ -157,7 +159,7 @@ export default function SearchForm({ showFullForm, openMainPage, setSearchedSong
                     htmlFor="artist"
                     className={inputLabelClassName}
                 >
-                    {artistContent.label['en']}
+                    {artistContent.label[language]}
                 </motion.label>
                 <motion.input
                     initial={{ opacity: 0, }}
@@ -168,11 +170,11 @@ export default function SearchForm({ showFullForm, openMainPage, setSearchedSong
                     onChange={handleArtistChange}
                     type="text"
                     className={formInputClassName}
-                    placeholder={artistContent.placeholder['en']} />
+                    placeholder={artistContent.placeholder[language]} />
             </div>
             <div className={showFullForm ? "mt-6 flex items-center justify-center gap-x-6" : "hidden"}>
                 <button type="button" onClick={handleSubmit}
-                    className={buttonClassName}>{submitButtonContent['en']}</button>
+                    className={buttonClassName}>{submitButtonContent[language]}</button>
             </div>
         </form>
     );

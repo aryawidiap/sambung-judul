@@ -105,15 +105,15 @@ export default function Home() {
     }
 
     const changeLanguage = (newLanguage: string) => {
-        if(newLanguage === 'id') {
+        if (newLanguage === 'id') {
             setLanguage(newLanguage);
+            localStorage.setItem('preferredLanguage', newLanguage);
         }
 
-        if(newLanguage === 'en') {
+        if (newLanguage === 'en') {
             setLanguage(newLanguage);
+            localStorage.setItem('preferredLanguage', newLanguage);
         }
-        
-        localStorage.setItem('preferredLanguage', language);
     }
 
     useEffect(() => {
@@ -123,6 +123,11 @@ export default function Home() {
             setLatestSongTitle(lastSong.title);
         }
         setSongs(pastSongs);
+
+        const preferredLanguage = localStorage.getItem('preferredLanguage');
+        if (preferredLanguage) {
+            changeLanguage(preferredLanguage);
+        }
     }, []);
 
     const version = '0.1.1';
@@ -155,7 +160,7 @@ export default function Home() {
                     <p>
                         {aboutContent.content[language]}
                     </p>
-                    <p className='italic font-bold mt-4 text-xs'>versi {version}</p>
+                    <p className='italic font-bold mt-4 text-xs'>version {version}</p>
                 </SimpleModal>
                 <SimpleModal
                     header={howToContent.header[language]}

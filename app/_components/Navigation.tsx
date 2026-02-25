@@ -8,6 +8,16 @@ export function Navigation({ initialPage, newGame, openAboutModal, openHowToModa
         "position-absolute cursor-not-allowed opacity-50"
         : "position-absolute cursor-pointer hover:*:fill-blue-200";
 
+    const toggleLanguage = () => {
+        if (language === 'id') {
+            changeLanguage('en');
+        }
+
+        if (language === 'en') {
+            changeLanguage('id');
+        }
+    }
+
     return <nav>
         <h1 className={"text-3xl my-3 transition " + msMadi.className + (initialPage ? "" : "")}>Sambung
             <span className={figtree.className + " font-bold uppercase text-2xl"}>Judul</span>
@@ -16,7 +26,7 @@ export function Navigation({ initialPage, newGame, openAboutModal, openHowToModa
             <button className="position-absolute cursor-pointer hover:*:fill-blue-200" onClick={openAboutModal}><FaInfo /></button>
             <button className="position-absolute cursor-pointer hover:*:fill-blue-200" onClick={openHowToModal}><FaQuestion /></button>
             <button className={newGameButtonClassName} onClick={startNewGame} disabled={newGame}><FaPlus /></button>
-            <button className="position-absolute cursor-pointer hover:*:fill-blue-200" onClick={() => {language === 'id' ? changeLanguage('en') : changeLanguage('id')}}>{language}</button>
+            <button className="position-absolute cursor-pointer hover:*:fill-blue-200" onClick={toggleLanguage}>{language}</button>
         </div>
     </nav>;
 }

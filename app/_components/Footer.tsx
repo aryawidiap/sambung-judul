@@ -2,11 +2,15 @@
 
 import Link from "next/link";
 import { footer as footerContent } from "../_utils/content";
+import { useContext } from "react";
+import LanguageContext from "../_context/LanguageContext";
 
 export default function Footer() {
+    const language = useContext(LanguageContext);
+
     return <footer className="flex flex-col gap-2 md:flex-row md:gap-5 my-3">
         <Link className="hover:underline hover:text-transparent hover:bg-linear-to-r hover:from-fuchsia-600 hover:to-orange-600 hover:bg-clip-text hover:text-shadow-md hover:text-shadow-white/10" href="https://musicbrainz.org/doc/MusicBrainz_API">
-            {footerContent.madeWith['en']}
+            {footerContent.madeWith[language]}
         </Link>
         <div className="flex flex-row gap-5 mx-auto">
             <Link className="hover:underline hover:text-transparent hover:bg-linear-to-r hover:from-white hover:via-white hover:to-gray-600 hover:bg-clip-text hover:text-shadow-md hover:text-shadow-white/10" href="https://github.com/aryawidiap">Github</Link>
