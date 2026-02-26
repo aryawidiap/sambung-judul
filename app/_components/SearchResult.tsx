@@ -85,11 +85,6 @@ export default function SearchResult({ searchedSong, addNewSong, previousSongIds
                             <p className="text-center tracking-wider">{notFoundMessage[language]}</p>
                         </motion.div>
                 }
-
-                {
-                    
-
-                }
             </AnimatePresence>
         );
     }
