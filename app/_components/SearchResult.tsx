@@ -1,4 +1,3 @@
-import { AnimatePresence } from "motion/react"
 import Song from "../_model/Song"
 import SongSearchListItem from "./SongSearchListItem"
 import { SearchResultProps } from "../_interfaces/Props"
@@ -7,6 +6,7 @@ import { getSongList } from "../_utils/api";
 import Image from "next/image";
 import LanguageContext from "../_context/LanguageContext";
 import { searchResult } from "../_utils/content";
+import { AnimatePresence, motion } from "motion/react";
 
 /**
  * Renders the search result.
@@ -14,9 +14,9 @@ import { searchResult } from "../_utils/content";
  */
 export default function SearchResult({ searchedSong, addNewSong, previousSongIds }: SearchResultProps) {
     const searchingForSong = searchedSong.title !== '' && searchedSong.artist !== '';
-    const [matchedSongs, setMatchedSongs] = useState<Array<Song>>([]);
+    const [matchedSongs, setMatchedSongs] = useState<Array<Song> | null>(null);
     const language = useContext(LanguageContext);
-    const { header: headerContent} = searchResult;
+    const { header: headerContent } = searchResult;
 
     useEffect(() => {
         if (searchingForSong) {
@@ -34,40 +34,63 @@ export default function SearchResult({ searchedSong, addNewSong, previousSongIds
         }
 
         return () => {
-            setMatchedSongs([]);
+            setMatchedSongs(null);
         };
     }, [searchingForSong, searchedSong, previousSongIds]);
 
-    /**
-     * @todo handle if no song match found
-     */
-
     if (searchingForSong) {
-        if (matchedSongs.length === 0) {
+        if (!matchedSongs) {
             return (
-                <div className="animate-pulse">
-                    <Image src='/loading-songs-smaller-magnifier.gif' width='200' height='200' alt="loading icon" />
-                    <p className="text-center tracking-wider">Loading songs</p>
-                </div>
+                <AnimatePresence>
+                    <motion.div
+                        initial={{ opacity: 0, scale: 1.1 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        transition={{ ease: "easeInOut" }}
+                        className="animate-pulse"
+                    >
+                        <Image src='/loading-songs-smaller-magnifier.gif' width='200' height='200' alt="loading icon" />
+                        <p className="text-center tracking-wider">Loading songs</p>
+                    </motion.div>
+                </AnimatePresence>
             )
         }
-        return <div className="flex flex-col items-center">
-            <div className="mb-2">
-                {headerContent[language]}
-            </div>
-            <ul id="search-result" className="flex flex-col items-center gap-y-3 max-h-70 overflow-x-clip overflow-y-scroll py-2 px-4 snap-y">
+        if (matchedSongs.length === 0) {
+            const { notFoundMessage } = searchResult;
+            return (
                 <AnimatePresence>
-                    {
-                        matchedSongs.map(song => {
-                            return <SongSearchListItem
-                                song={song}
-                                addSong={addNewSong}
-                                key={song.id}
-                            />
-                        })
-                    }
+                    <motion.div
+                        initial={{ opacity: 0, scale: 1.1 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        transition={{ ease: "easeInOut" }}
+                    >
+                        <Image src='/song-search-not-found.png' width='200' height='200' alt="loading icon" className="mx-auto" />
+                        <p className="text-center tracking-wider">{notFoundMessage[language]}</p>
+                    </motion.div>
                 </AnimatePresence>
-            </ul>
-        </div>
+
+            )
+        }
+        return (
+            <AnimatePresence>
+                <div className="flex flex-col items-center">
+                    <div className="mb-2">
+                        {headerContent[language]}
+                    </div>
+                    <ul id="search-result" className="flex flex-col items-center gap-y-3 max-h-70 overflow-x-clip overflow-y-scroll py-2 px-4 snap-y">
+                        {
+                            matchedSongs.map(song => {
+                                return <SongSearchListItem
+                                    song={song}
+                                    addSong={addNewSong}
+                                    key={song.id}
+                                />
+                            })
+                        }
+                    </ul>
+                </div>
+            </AnimatePresence>
+        )
     }
 }

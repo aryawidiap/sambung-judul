@@ -67,7 +67,7 @@ export const mainPage = {
     },
     newGame: {
         id: "Mulai permainan baru",
-        en: 'Start a new game,'
+        en: 'Start a new game',
     },
     madeWith: {
         id: "",
@@ -126,10 +126,15 @@ export const songKeywords = {
     }
 }
 
-
 export const searchResult = {
-    header: {},
-    notFoundMessage: {},
+    header: {
+        id: 'Manakah lagu yang kamu maksud?',
+        en: 'Which song do you want to choose?',
+    },
+    notFoundMessage: {
+        id: 'Lagu tidak ditemukan :(',
+        en: 'We could not find the song :('
+    },
 }
 
 export const searchHistory = {}
