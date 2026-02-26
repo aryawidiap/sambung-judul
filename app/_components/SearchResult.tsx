@@ -2,9 +2,11 @@ import { AnimatePresence } from "motion/react"
 import Song from "../_model/Song"
 import SongSearchListItem from "./SongSearchListItem"
 import { SearchResultProps } from "../_interfaces/Props"
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { getSongList } from "../_utils/api";
 import Image from "next/image";
+import LanguageContext from "../_context/LanguageContext";
+import { searchResult } from "../_utils/content";
 
 /**
  * Renders the search result.
@@ -13,6 +15,8 @@ import Image from "next/image";
 export default function SearchResult({ searchedSong, addNewSong, previousSongIds }: SearchResultProps) {
     const searchingForSong = searchedSong.title !== '' && searchedSong.artist !== '';
     const [matchedSongs, setMatchedSongs] = useState<Array<Song>>([]);
+    const language = useContext(LanguageContext);
+    const { header: headerContent} = searchResult;
 
     useEffect(() => {
         if (searchingForSong) {
@@ -49,9 +53,8 @@ export default function SearchResult({ searchedSong, addNewSong, previousSongIds
         }
         return <div className="flex flex-col items-center">
             <div className="mb-2">
-                Manakah lagu yang kamu maksud?
+                {headerContent[language]}
             </div>
-            {/** @todo x is scrolling */}
             <ul id="search-result" className="flex flex-col items-center gap-y-3 max-h-70 overflow-x-clip overflow-y-scroll py-2 px-4 snap-y">
                 <AnimatePresence>
                     {
