@@ -38,59 +38,59 @@ export default function SearchResult({ searchedSong, addNewSong, previousSongIds
         };
     }, [searchingForSong, searchedSong, previousSongIds]);
 
+    const currentlySearchingSong = !matchedSongs;
+    const songFound = matchedSongs !== null && matchedSongs?.length !== 0;
+    const { notFoundMessage } = searchResult;
+
     if (searchingForSong) {
-        if (!matchedSongs) {
-            return (
-                <AnimatePresence>
+        return (
+            <AnimatePresence>
+                {
+                    currentlySearchingSong ?
                     <motion.div
                         initial={{ opacity: 0, scale: 1.1 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.9 }}
-                        transition={{ ease: "easeInOut" }}
+                        transition={{ ease: "easeInOut", duration: 1.5 }}
                         className="animate-pulse"
+
                     >
                         <Image src='/loading-songs-smaller-magnifier.gif' width='200' height='200' alt="loading icon" />
                         <p className="text-center tracking-wider">Loading songs</p>
                     </motion.div>
-                </AnimatePresence>
-            )
-        }
-        if (matchedSongs.length === 0) {
-            const { notFoundMessage } = searchResult;
-            return (
-                <AnimatePresence>
-                    <motion.div
-                        initial={{ opacity: 0, scale: 1.1 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        transition={{ ease: "easeInOut" }}
-                    >
-                        <Image src='/song-search-not-found.png' width='200' height='200' alt="loading icon" className="mx-auto" />
-                        <p className="text-center tracking-wider">{notFoundMessage[language]}</p>
-                    </motion.div>
-                </AnimatePresence>
+                    : songFound ?
+                        <div className="flex flex-col items-center">
+                            <div className="mb-2">
+                                {headerContent[language]}
+                            </div>
+                            <ul id="search-result" className="flex flex-col items-center gap-y-3 max-h-70 overflow-x-clip overflow-y-scroll py-2 px-4 snap-y">
+                                {
+                                    matchedSongs!.map(song => {
+                                        return <SongSearchListItem
+                                            song={song}
+                                            addSong={addNewSong}
+                                            key={song.id}
+                                        />
+                                    })
+                                }
+                            </ul>
+                        </div> :
+                        <motion.div
+                            initial={{ opacity: 0, scale: 1.1 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            transition={{ ease: "easeInOut", duration: 1.5 }}
+                        >
+                            <Image src='/song-search-not-found.png' width='200' height='200' alt="loading icon" className="mx-auto" />
+                            <p className="text-center tracking-wider">{notFoundMessage[language]}</p>
+                        </motion.div>
+                }
 
-            )
-        }
-        return (
-            <AnimatePresence>
-                <div className="flex flex-col items-center">
-                    <div className="mb-2">
-                        {headerContent[language]}
-                    </div>
-                    <ul id="search-result" className="flex flex-col items-center gap-y-3 max-h-70 overflow-x-clip overflow-y-scroll py-2 px-4 snap-y">
-                        {
-                            matchedSongs.map(song => {
-                                return <SongSearchListItem
-                                    song={song}
-                                    addSong={addNewSong}
-                                    key={song.id}
-                                />
-                            })
-                        }
-                    </ul>
-                </div>
+                {
+                    
+
+                }
             </AnimatePresence>
-        )
+        );
     }
 }
