@@ -11,6 +11,7 @@ import { IconProp, library } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { searchForm } from "../_utils/content";
 import LanguageContext from "../_context/LanguageContext";
+import { extractKeywords } from "../_utils";
 
 
 export default function SearchForm({ showFullForm, openMainPage, setSearchedSong, latestSongTitle }: SearchFormProps) {
@@ -37,30 +38,6 @@ export default function SearchForm({ showFullForm, openMainPage, setSearchedSong
         hover:outline-neutral-100 hover:scale-110 \
         active:scale-90 active:bg-slate-800/70 active:inset-shadow-sm \
         active:inset-shadow-slate-950/70 transition";
-
-    const extractKeywords = (songTitle: string) => {
-        if (songTitle === '') {
-            return [];
-        }
-
-        const titleWithoutPunctuation = songTitle.toLowerCase().replace(/[.,\/#!$%?\^&\*;:{}=\-_`~()]/g, "");
-        const wordsInTitle = titleWithoutPunctuation.split(" ");
-        /**
-         * @todo Filter english word only
-         * ref library to use:
-         * https://www.npmjs.com/package/wordlist-english
-         * https://www.npmjs.com/package/an-array-of-english-words
-         * https://www.npmjs.com/package/wordnet?activeTab=dependents
-         */
-        const wordsInTitleWithoutStopwords = removeStopwords(wordsInTitle)
-        const finalKeywords = wordsInTitleWithoutStopwords.map(((word: string) => {
-            return {
-                term: word,
-                foundInTitle: false,
-            }
-        }));
-        return finalKeywords;
-    }
 
     const getKeywords = (newTitle: string, previousTitle: string) => {
         const rawKeywords = extractKeywords(previousTitle);
@@ -92,7 +69,7 @@ export default function SearchForm({ showFullForm, openMainPage, setSearchedSong
     const [title, setTitle] = useState('');
     const [artist, setArtist] = useState('');
     const language = useContext(LanguageContext);
-    const keywords = getKeywords(title, latestSongTitle);
+    const flaggedKeywords = getKeywords(title, latestSongTitle);
     const {
         title: titleContent,
         artist: artistContent,
@@ -120,7 +97,7 @@ export default function SearchForm({ showFullForm, openMainPage, setSearchedSong
         setArtist(event.target.value);
     }
 
-    const keywordHit = keywords.length > 0 ? (keywords.filter((word) => word.foundInTitle === true).length > 0) : true;
+    const keywordHit = flaggedKeywords.length > 0 ? (flaggedKeywords.filter((word) => word.foundInTitle === true).length > 0) : true;
 
     const handleSubmit = () => {
         if (keywordHit) {
@@ -149,7 +126,7 @@ export default function SearchForm({ showFullForm, openMainPage, setSearchedSong
                             : titleContent.placeholder.fullForm[language]
                     }
                 />
-                <PreviousSongKeywords show={keywords.length !== 0} keywords={keywords} />
+                <PreviousSongKeywords show={flaggedKeywords.length !== 0} keywords={flaggedKeywords} />
             </div>
 
             <div className={showFullForm ? "sm:col-span-4 mt-4 flex flex-col items-center-safe" : "hidden"}>
