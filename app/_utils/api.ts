@@ -46,9 +46,12 @@ export async function getSongCoverArt(releaseMbid: string) {
 
 export async function getSongList({ title, artist, previousSongIds }: { title: string, artist: string, previousSongIds: string[] }) {
     try {
-        const url = encodeURI(`https://musicbrainz.org/ws/2/recording?query=recording:${encodeURIComponent(title)} AND artist:${encodeURIComponent(artist)}`);
+        const baseUrl = encodeURI(`https://musicbrainz.org/ws/2/recording?query=recording:"(title)" AND artist:"(artist)"`)
+        const encodedTitle = encodeURIComponent(title);
+        const encodedArtist = encodeURIComponent(artist);
+        const urlWithParameter = baseUrl.replace("(title)", encodedTitle).replace("(artist)", encodedArtist)
         const response = await fetch(
-            url,
+            urlWithParameter,
             {
                 method: 'GET',
                 headers: {
@@ -58,9 +61,6 @@ export async function getSongList({ title, artist, previousSongIds }: { title: s
         );
         const data = await response.json();
 
-        /**
-         * @todo Handle if no song match
-         */
         const songList = (data.recordings.map((song: any) => {
             const releases = song['releases'];
             if (!releases) {
@@ -86,8 +86,8 @@ export async function getSongList({ title, artist, previousSongIds }: { title: s
                 releaseId: firstReleaseId,
             } as Song;
         }) as Song[])
-            // do not include all the songs already added to history
             .filter((song) => song !== null)
+            // do not include all the songs already added to history
             .filter((song) => !previousSongIds.includes(song.id));
 
         const songCoverArtLinks = await Promise.all(songList.map((song) => getSongCoverArt(song.releaseId)))
