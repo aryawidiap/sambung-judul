@@ -1,6 +1,9 @@
 import { removeStopwords, eng } from 'stopword';
+import {} from 'an-array-of-english-words';
 
 export const extractKeywords = (songTitle: string) => {
+    const englishWords = require('an-array-of-english-words') as string[];
+
     if (songTitle === '') {
         return [];
     }
@@ -14,8 +17,9 @@ export const extractKeywords = (songTitle: string) => {
      * https://www.npmjs.com/package/an-array-of-english-words
      * https://www.npmjs.com/package/wordnet?activeTab=dependents
      */
-    const wordsInTitleWithoutStopwords = removeStopwords(wordsInTitle)
-    const finalKeywords = wordsInTitleWithoutStopwords.map(((word: string) => {
+    const withoutStopwords = removeStopwords(wordsInTitle)
+    const englishWordOnly = withoutStopwords.filter(keyword => englishWords.includes(keyword));
+    const finalKeywords = englishWordOnly.map(((word: string) => {
         return {
             term: word,
             foundInTitle: false,
