@@ -4,10 +4,6 @@ import SongImage from "./SongImage";
 
 export default function SongDetails({ song, expandTitleFromExternal }: { song: Song, expandTitleFromExternal: boolean }) {
 
-    if (expandTitleFromExternal) {
-        console.log('Button is focus');
-
-    }
     return (
         <div className="flex flex-row items-center p-3 me-1">
             <div className="album-cover rounded-md bg-blue-100 size-[80px] min-w-[80px] min-h-[80px] overflow-clip">
