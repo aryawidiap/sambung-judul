@@ -12,7 +12,7 @@ export default function SongSearchListItem({ song, addSong }: SongSearchListItem
     library.add(fas);
     // @ts-expect-error Type '"fa-solid fa-angle-right"' is not assignable to type 'IconProp'.
     const angleRightIcon: IconProp = "fa-solid fa-angle-right";
-    
+
     const [addButtonIsFocused, setAddButtonIsFocused] = useState(false);
 
     const handleAddButtonFocus = () => {
@@ -22,15 +22,20 @@ export default function SongSearchListItem({ song, addSong }: SongSearchListItem
     const handleAddButtonBlur = () => {
         setAddButtonIsFocused(false);
     }
-    
+    const toggleButtonFocus = () => {
+        setAddButtonIsFocused(!addButtonIsFocused);
+    }
+
     return (
         <motion.li
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             id={song.id}
-            className="outline rounded-xl bg-white/50 backdrop-blur-xs relative w-xs ">
-            <SongDetails song={song} expandTitleFromExternal={addButtonIsFocused}/>
+            className="outline rounded-xl bg-white/50 backdrop-blur-xs relative w-xs "
+            onTap={toggleButtonFocus}
+            >
+            <SongDetails song={song} expandTitleFromExternal={addButtonIsFocused} />
             <button className="ps-5 absolute inset-y-0 right-0 snap-start scroll-mt-2 scroll-smooth
       text-white/50
       hover:bg-linear-to-r hover:from-white/0 hover:to-white/80 
@@ -40,10 +45,10 @@ export default function SongSearchListItem({ song, addSong }: SongSearchListItem
       transition" onClick={() => {
                     addSong(song)
                 }}
-                
+
                 onFocus={handleAddButtonFocus}
                 onBlur={handleAddButtonBlur}
-                >
+            >
                 <FontAwesomeIcon icon={angleRightIcon} />
             </button>
         </motion.li>
