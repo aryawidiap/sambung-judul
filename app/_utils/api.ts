@@ -20,9 +20,7 @@ export async function getSongCoverArt(releaseMbid: string) {
         if (response.ok) {
             const data = await response.json();
             const imageData = data['images'][0];
-            const thumbnailLink = imageData['thumbnails']['500'] as string;
-            console.log(thumbnailLink);
-            
+            const thumbnailLink = imageData['thumbnails']['500'] as string;            
 
             if (thumbnailLink) {
                 return thumbnailLink;
