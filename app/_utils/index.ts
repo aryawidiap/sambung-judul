@@ -1,6 +1,30 @@
 import { removeStopwords, eng } from 'stopword';
-import {} from 'an-array-of-english-words';
+import { } from 'an-array-of-english-words';
 
+const handleStopwords = (words: string[]) => {
+    const pronouns = [
+        'i', 'me', 'my', 'mine',
+        'we', 'us', 'our', 'ours',
+        'you', 'your', 'yours',
+        'he', 'him', 'his',
+        'she', 'her', 'hers',
+        'it', 'its',
+        'they', 'them', 'their', 'theirs',
+    ];
+    
+    if(words.length <= 5) {
+        return words
+    }
+
+    const customStopwords = eng.filter(word => !pronouns.includes(word))
+    const withoutStopwords = removeStopwords(words, customStopwords);
+
+    if(withoutStopwords.length === 0) {
+        return words
+    }
+
+    return withoutStopwords;
+}
 export const extractKeywords = (songTitle: string) => {
     const englishWords = require('an-array-of-english-words') as string[];
 
@@ -10,20 +34,16 @@ export const extractKeywords = (songTitle: string) => {
 
     const titleWithoutPunctuation = songTitle.toLowerCase().replace(/[.,\/#!$%?\^&\*;:{}=\-_`~()]/g, "");
     const wordsInTitle = titleWithoutPunctuation.split(" ");
-    /**
-     * @todo Filter english word only
-     * ref library to use:
-     * https://www.npmjs.com/package/wordlist-english
-     * https://www.npmjs.com/package/an-array-of-english-words
-     * https://www.npmjs.com/package/wordnet?activeTab=dependents
-     */
-    const withoutStopwords = removeStopwords(wordsInTitle)
+    const withoutStopwords = handleStopwords(wordsInTitle)
     const englishWordOnly = withoutStopwords.filter(keyword => englishWords.includes(keyword));
-    const finalKeywords = englishWordOnly.map(((word: string) => {
+    const uniqueKeywords = Array.from(new Set(englishWordOnly));
+
+    const finalKeywords = uniqueKeywords.map(((word: string) => {
         return {
             term: word,
             foundInTitle: false,
         }
     }));
+    
     return finalKeywords;
 }
