@@ -8,5 +8,5 @@ export default function SongImage({ songCoverArtLink }: { songCoverArtLink: stri
         }
         return coverLink;
     }
-    return <Image src={getActualSrc(songCoverArtLink)} alt="" className="object-cover h-auto w-full" height={300} width={300} placeholder="blur" blurDataURL="./music_placeholder.png"/>;
+    return <Image src={getActualSrc(songCoverArtLink)} alt="" className="object-cover h-auto w-full" height={300} width={300} placeholder="blur" blurDataURL="/music_placeholder.png"/>;
 }

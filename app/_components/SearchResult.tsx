@@ -55,7 +55,7 @@ export default function SearchResult({ searchedSong, addNewSong, previousSongIds
                         className="animate-pulse"
 
                     >
-                        <Image src='./loading-songs-smaller-magnifier.gif' width='200' height='200' alt="loading icon" />
+                        <Image src='/loading-songs-smaller-magnifier.gif' width='200' height='200' alt="loading icon" />
                         <p className="text-center tracking-wider">Loading songs</p>
                     </motion.div>
                     : songFound ?
@@ -81,7 +81,7 @@ export default function SearchResult({ searchedSong, addNewSong, previousSongIds
                             exit={{ opacity: 0, scale: 0.9 }}
                             transition={{ ease: "easeInOut", duration: 1.5 }}
                         >
-                            <Image src='./song-search-not-found.png' width='200' height='200' alt="loading icon" className="mx-auto" />
+                            <Image src='/song-search-not-found.png' width='200' height='200' alt="loading icon" className="mx-auto" />
                             <p className="text-center tracking-wider">{notFoundMessage[language]}</p>
                         </motion.div>
                 }

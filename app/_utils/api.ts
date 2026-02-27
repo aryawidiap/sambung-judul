@@ -6,7 +6,7 @@ import Song from "../_model/Song";
  */
 export async function getSongCoverArt(releaseMbid: string) {
     try {
-        const url = encodeURI(`http://coverartarchive.org/release/${encodeURIComponent(releaseMbid)}`);
+        const url = encodeURI(`https://coverartarchive.org/release/${encodeURIComponent(releaseMbid)}`);
         const response = await fetch(
             url,
             {
@@ -21,6 +21,8 @@ export async function getSongCoverArt(releaseMbid: string) {
             const data = await response.json();
             const imageData = data['images'][0];
             const thumbnailLink = imageData['thumbnails']['500'] as string;
+            console.log(thumbnailLink);
+            
 
             if (thumbnailLink) {
                 return thumbnailLink;
