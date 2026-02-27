@@ -137,4 +137,10 @@ export const searchResult = {
     },
 }
 
+/** @todo Fix when the app accept Indonesian language */
+export const titleLanguageErrorContent = {
+    id: 'Pastikan judul mengandung kata dalam Bahasa Inggris',
+    en: 'Make sure the title includes English word(s)'
+}
+
 export const searchHistory = {}

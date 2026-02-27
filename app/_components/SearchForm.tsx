@@ -1,5 +1,5 @@
 import { SearchFormProps } from "../_interfaces/Props";
-import { ChangeEvent, useContext, useEffect, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import PreviousSongKeywords from "./PreviousSongKeywords";
 // DO NOT DELETE
@@ -9,9 +9,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconProp, library } from '@fortawesome/fontawesome-svg-core'
 /* import all the icons in Free Solid, Free Regular, and Brands styles */
 import { fas } from '@fortawesome/free-solid-svg-icons'
-import { searchForm } from "../_utils/content";
+import { searchForm, titleLanguageErrorContent } from "../_utils/content";
 import LanguageContext from "../_context/LanguageContext";
-import { extractKeywords } from "../_utils";
+import { extractKeywords, splitWords, wordsIsInLanguage } from "../_utils";
 
 
 export default function SearchForm({ showFullForm, openMainPage, setSearchedSong, latestSongTitle }: SearchFormProps) {
@@ -68,6 +68,8 @@ export default function SearchForm({ showFullForm, openMainPage, setSearchedSong
 
     const [title, setTitle] = useState('');
     const [artist, setArtist] = useState('');
+    const [titleLanguageError, setTitleLanguageError] = useState(false);
+    const titleInput = useRef<HTMLInputElement>(null);
     const language = useContext(LanguageContext);
     const flaggedKeywords = getKeywords(title, latestSongTitle);
     const {
@@ -90,6 +92,9 @@ export default function SearchForm({ showFullForm, openMainPage, setSearchedSong
     }
 
     const handleTitleChange = (event: ChangeEvent<HTMLInputElement>) => {
+        if (titleLanguageError) {
+            setTitleLanguageError(false);
+        }
         setTitle(event.target.value);
     }
 
@@ -100,6 +105,14 @@ export default function SearchForm({ showFullForm, openMainPage, setSearchedSong
     const keywordHit = flaggedKeywords.length > 0 ? (flaggedKeywords.filter((word) => word.foundInTitle === true).length > 0) : true;
 
     const handleSubmit = () => {
+        if (!wordsIsInLanguage(splitWords(title), language)) {
+            setTitleLanguageError(true);
+            if (titleInput.current) {
+                titleInput.current.focus();
+            }
+            return;
+        }
+
         if (keywordHit) {
             setSearchedSong({ title, artist });
         }
@@ -119,13 +132,29 @@ export default function SearchForm({ showFullForm, openMainPage, setSearchedSong
                 <input id="songTitle" name="songTitle" value={title}
                     onFocus={handleTitleInputFocus}
                     onChange={handleTitleChange} type="text"
-                    className={formInputClassName}
+                    className={formInputClassName + (titleLanguageError ? " outline-orange-500/50! bg-orange-800/30" : "")}
                     placeholder={
                         showFullForm
                             ? titleContent.placeholder.initialPage[language]
                             : titleContent.placeholder.fullForm[language]
                     }
+                    ref={titleInput}
                 />
+                <AnimatePresence>
+                    {
+                        titleLanguageError
+                            ? <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}>
+                                <div className="bg-amber-600/50 mt-3 px-4 py-1 rounded-full text-xs">
+                                    {titleLanguageErrorContent[language]}
+                                </div>
+                            </motion.div>
+                            : null
+                    }
+                </AnimatePresence>
+
                 <PreviousSongKeywords show={flaggedKeywords.length !== 0} keywords={flaggedKeywords} />
             </div>
 

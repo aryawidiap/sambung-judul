@@ -106,11 +106,13 @@ export default function Home() {
 
     const changeLanguage = (newLanguage: string) => {
         if (newLanguage === 'id') {
+            setSearchedSong({ title: '', artist: '' });
             setLanguage(newLanguage);
             localStorage.setItem('preferredLanguage', newLanguage);
         }
 
         if (newLanguage === 'en') {
+            setSearchedSong({ title: '', artist: '' });
             setLanguage(newLanguage);
             localStorage.setItem('preferredLanguage', newLanguage);
         }

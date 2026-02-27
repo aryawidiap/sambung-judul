@@ -1,6 +1,6 @@
 # Feature and Bugs Update
 
-## Upcoming
+## Future Versions
 
 ### Features
 
@@ -8,8 +8,6 @@
 - Change the game language (accept Indonesian title).
   
 ### Issues
-
-- Non english words are included in the keywords. [on progress]
 
 ## 0.3.0 (PLANNED web launch)
 
@@ -24,6 +22,7 @@
 ### Bug and other fixes
 
 - Title without keywords can slip through because the API calling result includes search for each word of the title > Solved by using quotation marks ("") to find the title in full instead of the words in the title.
+- Solved non english words included in the keywords.
 
 ## 0.1.2
 
