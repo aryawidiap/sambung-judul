@@ -1,6 +1,5 @@
 import Image from "next/image";
 
-
 export default function SongImage({ songCoverArtLink }: { songCoverArtLink: string; }) {
     const getActualSrc = (coverLink: string) => {
         if (coverLink === '') {

@@ -2,13 +2,6 @@ import { SearchFormProps } from "../_interfaces/Props";
 import { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import PreviousSongKeywords from "./PreviousSongKeywords";
-// DO NOT DELETE
-import { removeStopwords, eng } from 'stopword';
-// DO NOT DELETE
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { IconProp, library } from '@fortawesome/fontawesome-svg-core'
-/* import all the icons in Free Solid, Free Regular, and Brands styles */
-import { fas } from '@fortawesome/free-solid-svg-icons'
 import { searchForm, titleLanguageErrorContent } from "../_utils/content";
 import LanguageContext from "../_context/LanguageContext";
 import { extractKeywords, splitWords, wordsIsInLanguage } from "../_utils";

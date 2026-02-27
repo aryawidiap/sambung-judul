@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp, library } from '@fortawesome/fontawesome-svg-core'
 /* import all the icons in Free Solid, Free Regular, and Brands styles */
 import { fas } from '@fortawesome/free-solid-svg-icons'
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 import SongDetails from "./SongDetails";
 import SongHistoryListItemProps from "../_interfaces/SongHistoryListItemProps";
 

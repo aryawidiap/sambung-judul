@@ -1,18 +1,9 @@
 'use client'
 import { Ms_Madi } from 'next/font/google'
-import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useRef, useState } from "react";
 import Song from "./_model/Song";
-import { FaBars, FaClockRotateLeft, FaXmark } from 'react-icons/fa6';
-
-// DO NOT DELETE
-import { removeStopwords, eng } from 'stopword';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { IconProp, library } from '@fortawesome/fontawesome-svg-core'
-// DO NOT DELETE
 
 /* import all the icons in Free Solid, Free Regular, and Brands styles */
-import { fas } from '@fortawesome/free-solid-svg-icons'
 import SongHistory from "./_components/SongHistory";
 import SearchResult from './_components/SearchResult';
 import SearchForm from './_components/SearchForm';
@@ -21,7 +12,7 @@ import SimpleModal from './_components/SimpleModal';
 import { mainPage } from './_utils/content';
 import { Navigation } from './_components/Navigation';
 import LanguageContext, { LanguageContextType } from './_context/LanguageContext';
-library.add(fas)
+
 
 /**
  * `const` for the font used in "Sambung Judul" header.
