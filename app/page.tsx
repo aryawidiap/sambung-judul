@@ -139,6 +139,13 @@ export default function Home() {
                 <div className={`flex min-h-screen w-full flex-col items-center ${initialPage ? "justify-center" : "justify-between"}  transition`}>
                     <Navigation initialPage={initialPage} newGame={newGame} language={language} openAboutModal={openAboutModal} openHowToModal={openHowToModal} startNewGame={startNewGame} changeLanguage={changeLanguage} />
                     <main className={"flex w-full max-w-3xl flex-col items-center justify-center py-5 px-5 sm:items-center overflow-x-clip"}>
+                        {
+                            newGame
+                                ?
+                                null
+                                :
+                                <div className='mb-2'><span className='font-bold'>Score:</span> {songs.length}</div>
+                        }
                         <SongHistory displayedSongs={displayedSongs} />
                         <SearchForm showFullForm={!initialPage} openMainPage={openMainPage} setSearchedSong={setSearchedSong} latestSongTitle={latestSongTitle} />
                         <SearchResult searchedSong={searchedSong} addNewSong={addNewSong} previousSongIds={previousSongIds} />
